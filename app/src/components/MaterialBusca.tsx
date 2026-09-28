@@ -1,4 +1,4 @@
-import { useId, useMemo, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useCatalogo } from '../auth/CatalogoContext'
 import type { Material } from '../lib/supabase'
 
@@ -19,6 +19,14 @@ export function MaterialBusca({
   const [aberto, setAberto] = useState(false)
   const [ativo, setAtivo] = useState(0)
   const id = useId()
+  // O blur fecha a lista com atraso (para o clique na opção valer); o timer
+  // é cancelado se o campo recebe foco ou texto de novo antes de disparar.
+  const fechar = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const cancelarFechamento = () => {
+    if (fechar.current) clearTimeout(fechar.current)
+    fechar.current = null
+  }
+  useEffect(() => cancelarFechamento, [])
 
   const resultados = useMemo(
     () => buscar(termo, 30).filter((m) => !excluir?.has(m.id)).slice(0, 20),
@@ -45,12 +53,18 @@ export function MaterialBusca({
           aria-controls={id}
           autoComplete="off"
           onChange={(e) => {
+            cancelarFechamento()
             setTermo(e.target.value)
             setAberto(true)
             setAtivo(0)
           }}
-          onFocus={() => setAberto(true)}
-          onBlur={() => setTimeout(() => setAberto(false), 150)}
+          onFocus={() => {
+            cancelarFechamento()
+            setAberto(true)
+          }}
+          onBlur={() => {
+            fechar.current = setTimeout(() => setAberto(false), 150)
+          }}
           onKeyDown={(e) => {
             if (e.key === 'ArrowDown') {
               e.preventDefault()

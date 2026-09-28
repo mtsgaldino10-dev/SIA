@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { cloneElement, isValidElement, useId, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { formatarDoc, formatarQtd, rotuloStatus, tomStatus } from '../lib/formato'
 
@@ -89,12 +89,28 @@ export function Campo({
   children: ReactNode
   style?: React.CSSProperties
 }) {
+  // O rótulo nomeia o controle; ajuda e erro o descrevem (aria-describedby),
+  // para não entrarem no nome acessível do campo.
+  const id = useId()
+  const idDescricao = `${id}-desc`
+  const temDescricao = !!(erro || ajuda)
+  const controle = isValidElement<{ id?: string; 'aria-describedby'?: string }>(children)
+    ? cloneElement(children, { id: children.props.id ?? id, 'aria-describedby': temDescricao ? idDescricao : undefined })
+    : children
   return (
-    <label className="campo" style={style}>
-      <span>{rotulo}</span>
-      {children}
-      {erro ? <span className="erro-campo">{erro}</span> : ajuda ? <span className="ajuda">{ajuda}</span> : null}
-    </label>
+    <div className="campo" style={style}>
+      <label htmlFor={isValidElement<{ id?: string }>(children) ? (children.props.id ?? id) : undefined}>{rotulo}</label>
+      {controle}
+      {erro ? (
+        <span id={idDescricao} className="erro-campo">
+          {erro}
+        </span>
+      ) : ajuda ? (
+        <span id={idDescricao} className="ajuda">
+          {ajuda}
+        </span>
+      ) : null}
+    </div>
   )
 }
 

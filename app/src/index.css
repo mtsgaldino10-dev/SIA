@@ -346,6 +346,7 @@ a.etiqueta:hover { border-color: var(--borda-forte); }
   gap: 4px;
   min-width: 0;
 }
+.campo > label:first-child,
 .campo > span:first-child {
   font-size: 0.85rem;
   font-weight: 500;

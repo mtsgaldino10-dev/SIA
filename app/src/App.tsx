@@ -11,6 +11,15 @@ import { SaldoInicial } from './pages/admin/SaldoInicial'
 import { AdminUsuarios } from './pages/admin/Usuarios'
 import { Inicio } from './pages/Inicio'
 import { Login } from './pages/Login'
+import { Divergencias } from './pages/Divergencias'
+import { Entradas } from './pages/entradas/Entradas'
+import { ReceberExterno } from './pages/entradas/ReceberExterno'
+import { PedidoDetalhe } from './pages/pedidos/PedidoDetalhe'
+import { NovoPedido, Pedidos } from './pages/pedidos/Pedidos'
+import { Guia } from './pages/remessas/Guia'
+import { Receber } from './pages/remessas/Receber'
+import { RemessaDetalhe } from './pages/remessas/RemessaDetalhe'
+import { Remessas } from './pages/remessas/Remessas'
 import { Saldo } from './pages/Saldo'
 
 function Protegida({ children }: { children: ReactNode }) {
@@ -46,6 +55,14 @@ export default function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route
+              path="/remessas/:id/guia"
+              element={
+                <Protegida>
+                  <Guia />
+                </Protegida>
+              }
+            />
+            <Route
               element={
                 <Protegida>
                   <Layout />
@@ -54,6 +71,15 @@ export default function App() {
             >
               <Route index element={<Inicio />} />
               <Route path="saldo" element={<Saldo />} />
+              <Route path="pedidos" element={<Pedidos />} />
+              <Route path="pedidos/novo" element={<NovoPedido />} />
+              <Route path="pedidos/:id" element={<PedidoDetalhe />} />
+              <Route path="remessas" element={<Remessas />} />
+              <Route path="remessas/:id" element={<RemessaDetalhe />} />
+              <Route path="remessas/:id/receber" element={<Receber />} />
+              <Route path="divergencias" element={<Divergencias />} />
+              <Route path="entradas" element={<Entradas />} />
+              <Route path="entradas/receber" element={<ReceberExterno />} />
               <Route path="admin/almoxarifados" element={<SoAdmin><AdminAlmoxarifados /></SoAdmin>} />
               <Route path="admin/usuarios" element={<SoAdmin><AdminUsuarios /></SoAdmin>} />
               <Route path="admin/materiais" element={<SoAdmin><AdminMateriais /></SoAdmin>} />
