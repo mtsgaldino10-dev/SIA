@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from './database.types'
+import { fetchComRetentativa } from './retentativa'
 
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const chave = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
@@ -8,7 +9,9 @@ if (!url || !chave) {
   throw new Error('Configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY em app/.env')
 }
 
-export const supabase = createClient<Database>(url, chave)
+export const supabase = createClient<Database>(url, chave, {
+  global: { fetch: fetchComRetentativa() },
+})
 
 type Publico = Database['public']
 export type Tabela<T extends keyof Publico['Tables']> = Publico['Tables'][T]['Row']

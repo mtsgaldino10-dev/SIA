@@ -87,12 +87,14 @@ test('aceite: resumo separa corte e falta, e os saldos batem', async ({ page }) 
   await expect(page.getByRole('row', { name: /900002.*5\s+3\s+3\s+3\s+2\s+0/ })).toBeVisible()
 
   await page.getByRole('link', { name: 'Saldo', exact: true }).first().click()
+  await expect(page.getByRole('heading', { name: 'Saldo', level: 1 })).toBeVisible()
   await page.getByLabel('Almoxarifado').selectOption({ label: 'MNT · Mantena' })
   await expect(page.getByRole('row', { name: /900001.*23/ })).toBeVisible() // 5 iniciais + 18
 
   await sair(page)
   await entrar(page, 'carlos')
   await page.getByRole('link', { name: 'Saldo', exact: true }).first().click()
+  await expect(page.getByRole('heading', { name: 'Saldo', level: 1 })).toBeVisible()
   await page.getByLabel('Almoxarifado').selectOption({ label: '211 · Almoxarifado regional' })
   await expect(page.getByRole('row', { name: /900001.*30/ })).toBeVisible() // 50 − 20
   await expect(page.getByRole('row', { name: /900002.*7/ })).toBeVisible() // 10 − 3

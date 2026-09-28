@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { useCatalogo } from '../auth/CatalogoContext'
 import { useSessao } from '../auth/SessaoContext'
 import { rotuloStatus } from '../lib/formato'
-import { Marca } from './ui'
+import { Aviso, Marca } from './ui'
 
 type ItemMenu = { para: string; rotulo: string; grupo: string; curto?: string; principal?: boolean }
 
@@ -39,6 +40,7 @@ export function useMenu(): ItemMenu[] {
 
 export function Layout() {
   const { perfil, sair } = useSessao()
+  const catalogo = useCatalogo()
   const itens = useMenu()
   const [maisAberto, setMaisAberto] = useState(false)
   const local = useLocation()
@@ -86,6 +88,16 @@ export function Layout() {
       </header>
 
       <main className="conteudo" key={local.pathname}>
+        {catalogo.erro && (
+          <div style={{ marginBottom: 16 }}>
+            <Aviso tipo="erro">
+              Catálogo de materiais não carregou: {catalogo.erro}{' '}
+              <button className="botao fantasma peq" onClick={() => void catalogo.recarregar()}>
+                Tentar de novo
+              </button>
+            </Aviso>
+          </div>
+        )}
         <Outlet />
       </main>
 

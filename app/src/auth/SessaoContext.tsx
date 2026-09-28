@@ -1,6 +1,7 @@
 import type { Session } from '@supabase/supabase-js'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { mensagemErro } from '../lib/erros'
+import { comRetentativa } from '../lib/retentativa'
 import { supabase, type Almox, type Atribuicao, type Perfil } from '../lib/supabase'
 
 type Sessao = {
@@ -56,14 +57,15 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
     setCarregandoPerfil(true)
     setErro(null)
     try {
-      const [p, a, x] = await Promise.all([
-        supabase.from('perfis').select('*').eq('id', usuarioId).maybeSingle(),
-        supabase.from('atribuicoes').select('*').eq('usuario_id', usuarioId),
-        supabase.from('almoxarifados').select('*').order('tipo').order('nome'),
-      ])
-      if (p.error) throw p.error
-      if (a.error) throw a.error
-      if (x.error) throw x.error
+      const [p, a, x] = await comRetentativa(async () => {
+        const r = await Promise.all([
+          supabase.from('perfis').select('*').eq('id', usuarioId).maybeSingle(),
+          supabase.from('atribuicoes').select('*').eq('usuario_id', usuarioId),
+          supabase.from('almoxarifados').select('*').order('tipo').order('nome'),
+        ])
+        for (const { error } of r) if (error) throw error
+        return r
+      })
       setPerfil(p.data)
       setAtribuicoes(a.data ?? [])
       setAlmoxarifados(x.data ?? [])

@@ -1,0 +1,111 @@
+import { expect, test, type Page } from '@playwright/test'
+import { entrar, FOTO, sair } from './apoio'
+
+// Estado herdado de 01 e 02. Mantena: 900001 = 24 (5 + 18 + 1), 900003 = 10.
+test.describe.configure({ mode: 'serial' })
+
+async function adicionarItem(page: Page, codigo: string, qtd: string, rotulo = 'Quantidade') {
+  await page.getByRole('combobox', { name: 'Adicionar material' }).fill(codigo)
+  await page.getByRole('option', { name: new RegExp(codigo) }).click()
+  await page.getByLabel(`${rotulo} de ${codigo}`).fill(qtd)
+}
+
+async function saldo(page: Page, almox: string, codigo: string) {
+  await page.getByRole('link', { name: 'Saldo', exact: true }).first().click()
+  await expect(page.getByRole('heading', { name: 'Saldo', level: 1 })).toBeVisible()
+  await page.getByLabel('Almoxarifado').selectOption({ label: almox })
+  return page.getByRole('row', { name: new RegExp(codigo) })
+}
+
+test('saída da base: bloqueia acima do saldo e exige justificativa de perda', async ({ page }) => {
+  await entrar(page, 'victor')
+  await page.getByRole('link', { name: 'Movimentar', exact: true }).click()
+  await page.getByRole('link', { name: /Registrar saída/ }).last().click()
+  await page.getByLabel('Almoxarifado').selectOption({ label: 'MNT · Mantena' })
+  await adicionarItem(page, '900001', '100')
+  await page.getByRole('button', { name: 'Registrar saída' }).click()
+  await expect(page.getByText(/Saldo insuficiente em Mantena.*Faça um ajuste de inventário/)).toBeVisible()
+
+  await page.getByLabel('Quantidade de 900001').fill('4')
+  await page.getByLabel('Motivo').selectOption('perda')
+  await page.getByRole('button', { name: 'Registrar saída' }).click()
+  await expect(page.getByText('Informe a justificativa da perda.')).toBeVisible()
+
+  await page.getByLabel('Motivo').selectOption('aplicacao')
+  await page.getByLabel('Observação').fill('Equipe 12, NS 4455')
+  await page.getByRole('button', { name: 'Registrar saída' }).click()
+  await expect(page.getByText(/SAI-\d{6} registrada/)).toBeVisible()
+  await expect(await saldo(page, 'MNT · Mantena', '900001')).toContainText('20')
+})
+
+test('transferência só para base do mesmo supervisor, recebida com conferência', async ({ page }) => {
+  await entrar(page, 'victor')
+  await page.goto('/movimentar/transferencia')
+  await page.getByLabel('Origem').selectOption({ label: 'MNT · Mantena' })
+  const destinos = await page.getByLabel('Destino').locator('option').allTextContents()
+  expect(destinos).toEqual(['CRC · Coroaci', 'ITB · Itabirinha'])
+  await page.getByLabel('Destino').selectOption({ label: 'ITB · Itabirinha' })
+  await adicionarItem(page, '900001', '5')
+  await page.getByRole('button', { name: 'Enviar transferência' }).click()
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(/REM-\d{6}/)
+  await expect(page.getByText('Transferência · Mantena → Itabirinha')).toBeVisible()
+
+  await page.getByRole('link', { name: 'Registrar recebimento' }).click()
+  await page.getByLabel('Contado de 900001').fill('5')
+  await page.getByLabel('Quem contou').fill('Zé de Itabirinha')
+  await page.getByLabel('Foto da guia assinada ou da carga').setInputFiles(FOTO)
+  await page.getByRole('button', { name: 'Registrar recebimento' }).click()
+  await expect(page.locator('.badge', { hasText: 'Encerrada' }).first()).toBeVisible()
+  await expect(await saldo(page, 'ITB · Itabirinha', '900001')).toContainText('5')
+})
+
+test('outro supervisor não transfere para as bases do Victor', async ({ page }) => {
+  await entrar(page, 'vinicius')
+  await page.goto('/movimentar/transferencia')
+  await page.getByLabel('Origem').selectOption({ label: 'RSP · Resplendor' })
+  const destinos = await page.getByLabel('Destino').locator('option').allTextContents()
+  expect(destinos).toEqual(['AIM · Aimorés'])
+})
+
+test('devolução ao 211, conferida pelo 211', async ({ page }) => {
+  await entrar(page, 'victor')
+  await page.goto('/movimentar/devolucao')
+  await page.getByLabel('Origem').selectOption({ label: 'MNT · Mantena' })
+  await expect(page.getByText('Destino: 211 · Almoxarifado regional')).toBeVisible()
+  await adicionarItem(page, '900003', '2,5')
+  await page.getByRole('button', { name: 'Enviar devolução' }).click()
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(/REM-\d{6}/)
+  const url = page.url()
+  await expect(page.getByRole('link', { name: 'Registrar recebimento' })).toHaveCount(0)
+  await sair(page)
+
+  await entrar(page, 'carlos')
+  await page.goto(url)
+  await page.getByRole('link', { name: 'Registrar recebimento' }).click()
+  await page.getByLabel('Contado de 900003').fill('2,5')
+  await page.getByLabel('Quem contou').fill('Carlos')
+  await page.getByLabel('Foto da guia assinada ou da carga').setInputFiles(FOTO)
+  await page.getByRole('button', { name: 'Registrar recebimento' }).click()
+  await expect(page.locator('.badge', { hasText: 'Encerrada' }).first()).toBeVisible()
+})
+
+test('ajuste de inventário mostra a diferença e exige justificativa', async ({ page }) => {
+  await entrar(page, 'victor')
+  await page.goto('/movimentar/ajuste')
+  await page.getByLabel('Almoxarifado').selectOption({ label: 'MNT · Mantena' })
+  await adicionarItem(page, '900001', '14', 'Contado')
+  // saldo 15 (20 − 5 transferidos), contado 14
+  await expect(page.getByRole('row', { name: /900001.*15\s+14\s+−1/ })).toBeVisible()
+  await page.getByRole('button', { name: 'Registrar ajuste' }).click()
+  await expect(page.getByText('Informe a justificativa do ajuste.')).toBeVisible()
+  await page.getByLabel('Justificativa').fill('Contagem mensal')
+  await page.getByRole('button', { name: 'Registrar ajuste' }).click()
+  await expect(page.getByText(/AJU-\d{6} registrado/)).toBeVisible()
+  await expect(await saldo(page, 'MNT · Mantena', '900001')).toContainText('14')
+
+  await page.getByRole('link', { name: 'Histórico' }).click()
+  await expect(page.getByRole('heading', { name: 'Histórico', level: 1 })).toBeVisible()
+  await page.getByLabel('Almoxarifado').selectOption({ label: 'MNT · Mantena' })
+  await expect(page.getByRole('row', { name: /Ajuste de inventário.*900001.*−1/ })).toBeVisible()
+  await expect(page.getByRole('row', { name: /Saída.*900001.*−4/ })).toBeVisible()
+})

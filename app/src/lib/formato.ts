@@ -82,6 +82,13 @@ export function formatarQtd(valor: number | string | null | undefined): string {
   return numeroBR.format(Number(valor))
 }
 
+/** Diferença com sinal explícito: +2,5 · −1 · 0 */
+export function formatarSinal(valor: number | string): string {
+  const n = Number(valor)
+  if (n === 0) return '0'
+  return `${n < 0 ? '−' : '+'}${numeroBR.format(Math.abs(n))}`
+}
+
 export function formatarMoeda(valor: number | string | null | undefined): string {
   if (valor === null || valor === undefined || valor === '') return '—'
   return moedaBR.format(Number(valor))

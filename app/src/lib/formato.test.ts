@@ -4,6 +4,7 @@ import {
   formatarDataHora,
   formatarDoc,
   formatarQtd,
+  formatarSinal,
   hojeISO,
   qtdValida,
   rotuloStatus,
@@ -78,5 +79,14 @@ describe('qtdValida', () => {
   })
   it('aceita zero quando permitido', () => {
     expect(qtdValida('0', false, { permiteZero: true })).toBeNull()
+  })
+})
+
+describe('formatarSinal', () => {
+  it('mostra sinal explícito com menos tipográfico', () => {
+    expect(formatarSinal(-1)).toBe('−1')
+    expect(formatarSinal(2.5)).toBe('+2,5')
+    expect(formatarSinal(0)).toBe('0')
+    expect(formatarSinal('-1234.5')).toBe('−1.234,5')
   })
 })
