@@ -1,0 +1,23 @@
+# Credenciais
+.env
+.env.*
+!.env.example
+app/.env
+app/.env.*
+!app/.env.example
+
+# Dependências e build
+node_modules/
+dist/
+
+# Supabase local
+supabase/.branches
+supabase/.temp
+
+# Ferramentas
+.superpowers/
+.vscode/
+*.log
+
+# Planilha do SAP (dados internos, com preços)
+*.xlsx
