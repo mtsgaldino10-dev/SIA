@@ -1,0 +1,104 @@
+import { expect, test } from '@playwright/test'
+import { entrar, sair, xlsx } from './apoio'
+
+test.describe.configure({ mode: 'serial' })
+
+test('admin vê os 13 almoxarifados e as unidades da planilha', async ({ page }) => {
+  await entrar(page, 'admin')
+  await page.getByRole('link', { name: 'Almoxarifados' }).click()
+  await expect(page.getByRole('row')).toHaveCount(14) // cabeçalho + 13
+  await expect(page.getByRole('row', { name: /RSP.*Resplendor/ })).toContainText('Vinícius')
+
+  await page.getByRole('link', { name: 'Unidades' }).click()
+  await expect(page.getByRole('row', { name: /^M3/ })).toContainText('Sim')
+  await expect(page.getByRole('row', { name: /^PC/ })).toContainText('Não')
+})
+
+test('admin importa materiais da planilha do SAP com bloqueios', async ({ page }) => {
+  await entrar(page, 'admin')
+  await page.getByRole('link', { name: 'Materiais' }).click()
+  await page.getByRole('link', { name: 'Importar planilha' }).click()
+
+  await page.getByLabel('1. Arquivo').setInputFiles(
+    xlsx('materiais.xlsx', [
+      [null, null, null, null, null, null],
+      [null, 'LISTA BÁSICA DE MATERIAIS', null, null, null, null],
+      [null, 'SEQ', 'CÓDIGO', 'DESCRIÇÃO', 'UNIDADE', 'PREÇO'],
+      [null, 1, 900001, 'PARAFUSO M16', 'PC', 2.5],
+      [null, 2, 900002, 'CONECTOR PERFURANTE', 'PC', 10],
+      [null, 3, 900003, 'CABO MULTIPLEX 16MM', 'M', 4.2],
+      [null, 4, 900004, 'ITEM UNIDADE RUIM', 'XX', 1],
+      [null, 5, 900005, 'ITEM REPETIDO A', 'PC', 1],
+      [null, 6, 900005, 'ITEM REPETIDO B', 'PC', 1],
+      [null, 'PE/RD - Rodapé', null, null, null, null],
+    ]),
+  )
+  await expect(page.getByText('3 prontos para importar')).toBeVisible()
+  await expect(page.getByText('3 bloqueados')).toBeVisible()
+  await expect(page.getByRole('row', { name: /900004.*Unidade XX não cadastrada/ })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Importar 3 materiais' }).click()
+  await expect(page.getByText('3 materiais inseridos.')).toBeVisible()
+
+  // Reimportar a mesma planilha não atualiza nada
+  await page.getByLabel('1. Arquivo').setInputFiles(
+    xlsx('materiais.xlsx', [['CÓDIGO', 'DESCRIÇÃO', 'UNIDADE'], [900001, 'PARAFUSO M16', 'PC']]),
+  )
+  await expect(page.getByText('0 prontos para importar')).toBeVisible()
+  await expect(page.getByRole('row', { name: /900001.*Já cadastrado/ })).toBeVisible()
+})
+
+test('admin atribui bases ao supervisor Victor', async ({ page }) => {
+  await entrar(page, 'admin')
+  await page.getByRole('link', { name: 'Usuários e atribuições' }).click()
+  await page.getByRole('row', { name: /Victor/ }).click()
+  for (const base of ['Mantena', 'Itabirinha', 'Coroaci']) {
+    await page.getByRole('checkbox', { name: new RegExp(base) }).check()
+  }
+  await page.getByRole('button', { name: 'Adicionar atribuição' }).click()
+  await expect(page.getByText('Atribuição adicionada.')).toBeVisible()
+  await expect(page.getByRole('row', { name: /MNT.*Mantena.*Responsável/ })).toBeVisible()
+  await expect(page.getByRole('row', { name: /MNT.*Mantena.*Supervisor/ })).toBeVisible()
+})
+
+test('admin carrega o saldo inicial do 211 e de Mantena', async ({ page }) => {
+  await entrar(page, 'admin')
+  await page.getByRole('link', { name: 'Saldo inicial' }).click()
+
+  // Material inexistente bloqueia tudo
+  await page.getByLabel('Almoxarifado').selectOption({ label: '211 · Almoxarifado regional' })
+  await page.getByLabel('Planilha').setInputFiles(
+    xlsx('saldo.xlsx', [['codigo_sap', 'quantidade'], [900001, 50], [999999, 1]]),
+  )
+  await expect(page.getByText('Linha 3: material 999999 não existe no catálogo')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Importar saldo inicial' })).toHaveCount(0)
+
+  await page.getByLabel('Planilha').setInputFiles(
+    xlsx('saldo.xlsx', [['codigo_sap', 'quantidade'], [900001, 50], [900002, 10], [900003, '100,5']]),
+  )
+  await expect(page.getByRole('heading', { name: '3 materiais para Almoxarifado regional' })).toBeVisible()
+  await page.getByRole('button', { name: 'Importar saldo inicial' }).click()
+  await expect(page.getByText(/Saldo inicial importado: AJU-\d{6} com 3 materiais/)).toBeVisible()
+
+  await page.getByLabel('Almoxarifado').selectOption({ label: 'MNT · Mantena' })
+  await page.getByLabel('Planilha').setInputFiles(xlsx('saldo.xlsx', [['codigo_sap', 'quantidade'], [900001, 5]]))
+  await page.getByRole('button', { name: 'Importar saldo inicial' }).click()
+  await expect(page.getByText(/Saldo inicial importado/)).toBeVisible()
+
+  await page.getByRole('link', { name: 'Saldo', exact: true }).click()
+  await page.getByLabel('Almoxarifado').selectOption({ label: '211 · Almoxarifado regional' })
+  await expect(page.getByRole('row', { name: /900003.*100,5/ })).toBeVisible()
+})
+
+test('supervisor não vê cadastros nem base de outro supervisor', async ({ page }) => {
+  await entrar(page, 'victor')
+  await expect(page.getByRole('link', { name: 'Materiais' })).toHaveCount(0)
+  await page.getByRole('link', { name: 'Saldo', exact: true }).first().click()
+  const opcoes = await page.getByLabel('Almoxarifado').locator('option').allTextContents()
+  expect(opcoes).toEqual(['CRC · Coroaci', 'ITB · Itabirinha', 'MNT · Mantena'])
+  await page.getByLabel('Almoxarifado').selectOption({ label: 'MNT · Mantena' })
+  await expect(page.getByRole('row', { name: /900001.*5/ })).toBeVisible()
+  await page.goto('/admin/materiais')
+  await expect(page.getByText('Acesso restrito ao administrador.')).toBeVisible()
+  await sair(page)
+})

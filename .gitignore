@@ -21,3 +21,7 @@ supabase/.temp
 
 # Planilha do SAP (dados internos, com preços)
 *.xlsx
+
+# Playwright
+app/test-results/
+app/playwright-report/
