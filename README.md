@@ -9,7 +9,7 @@ O plano completo está em [SIA_PLANO_IMPLEMENTAÇÃO.MD](SIA_PLANO_IMPLEMENTAÇ�
 | Pasta | Conteúdo |
 |---|---|
 | `supabase/migrations` | Banco: enums, tabelas, views, RLS, RPCs, storage e indicadores (fases 1 e 5) |
-| `supabase/tests/database` | Testes pgTAP que simulam cada papel (161 verificações) |
+| `supabase/tests/database` | Testes pgTAP que simulam cada papel (192 verificações) |
 | `app/` | App React + Vite + TypeScript (fases 2 a 5) |
 | `app/e2e` | Testes ponta a ponta (Playwright) contra o Supabase local |
 
@@ -40,7 +40,7 @@ Para o modo local, crie `app/.env.local-e2e` com `VITE_SUPABASE_URL=http://127.0
 ## Testes
 
 ```powershell
-supabase test db               # pgTAP no banco local (147 + 14 verificações)
+supabase test db               # pgTAP no banco local (192 verificações)
 cd app
 npm test                       # testes unitários (Vitest)
 npx tsc -b                     # checagem de tipos
@@ -59,7 +59,7 @@ supabase test db --db-url "postgresql://postgres.<ref>:<senha>@aws-0-sa-east-1.p
 supabase db push --db-url "postgresql://postgres.<ref>:<senha>@aws-0-sa-east-1.pooler.supabase.com:5432/postgres"
 ```
 
-As 7 migrations já foram aplicadas no projeto `hkfbypwkjvhuuwbijlwy` em 28/09/2026.
+As 8 migrations já foram aplicadas no projeto `hkfbypwkjvhuuwbijlwy` em 28/09/2026.
 
 ## Publicar o app
 
