@@ -9,7 +9,7 @@ export function mensagemErro(erro: unknown): string {
   const msg = e?.message ?? ''
   const code = e && 'code' in e ? e.code : undefined
 
-  if (erro instanceof TypeError && /fetch/i.test(msg)) {
+  if (/Failed to fetch|NetworkError|Load failed|network request failed/i.test(msg)) {
     return 'Sem conexão com o servidor. Verifique a internet e tente de novo.'
   }
   if (/Invalid login credentials/i.test(msg)) return 'E-mail ou senha incorretos.'

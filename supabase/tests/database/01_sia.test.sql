@@ -358,7 +358,7 @@ reset role;
 select tests.como('C211');
 select throws_like(
   $$ select rpc_tratar_divergencia(tests.item('rem1', 'PARAF'), 'ajuste_origem', 1, 'x') $$,
-  'Ajuste na origem só vale para sobra%', 'ajuste na origem não vale para falta');
+  '"Ajuste na origem" só vale para sobra%', 'ajuste na origem não vale para falta');
 select throws_like(
   $$ select rpc_tratar_divergencia(tests.item('rem1', 'PARAF'), 'baixa_transito', 3, 'x') $$,
   'Quantidade maior que a divergência em aberto%', 'não trata mais que o aberto');

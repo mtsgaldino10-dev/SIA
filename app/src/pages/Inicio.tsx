@@ -135,7 +135,7 @@ function MinhasBases({ bases }: { bases: Almox[] }) {
   const consulta = useConsulta(async () => {
     const [saldos, transito, pedidos, divergencias] = await Promise.all([
       carregarTodos<{ almox_id: string | null; saldo: number | null }>((de, ate) =>
-        supabase.from('v_saldo').select('almox_id, saldo').in('almox_id', ids).neq('saldo', 0).range(de, ate),
+        supabase.from('v_saldo').select('almox_id, saldo').in('almox_id', ids).neq('saldo', 0).order('almox_id').order('material_id').range(de, ate),
       ),
       listaOuErro(
         supabase.from('remessas').select('id, numero, destino_id, origem_id, data_envio').in('destino_id', ids).eq('status', 'em_transito'),

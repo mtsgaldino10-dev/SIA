@@ -22,6 +22,7 @@ export function PedidoDetalhe() {
   const { almox, responsavelEm } = useSessao()
   const nomes = useNomes()
   const [aviso, setAviso] = useState<string | null>(null)
+  const [erroEditor, setErroEditor] = useState<string | null>(null)
 
   const consulta = useConsulta<Dados>(async () => {
     const [pedido, itens, resumo, remessas] = await Promise.all([
@@ -46,7 +47,15 @@ export function PedidoDetalhe() {
     ((p.status === 'solicitado' || p.status === 'aprovado') && (ehSolicitante || ehAtendente))
 
   async function aposAcao(mensagem: string) {
+    setErroEditor(null)
     setAviso(mensagem)
+    await consulta.recarregar()
+  }
+
+  // Falha depois de já ter gravado algo: recarrega para o editor refletir o banco
+  async function aposFalhaParcial(mensagem: string) {
+    setAviso(null)
+    setErroEditor(mensagem)
     await consulta.recarregar()
   }
 
@@ -76,6 +85,7 @@ export function PedidoDetalhe() {
         }
       />
       <Aviso tipo="sucesso">{aviso}</Aviso>
+      <Aviso tipo="erro">{erroEditor}</Aviso>
 
       <div className="cartao">
         <dl className="dados">
@@ -121,7 +131,7 @@ export function PedidoDetalhe() {
       </div>
 
       {p.status === 'rascunho' && ehSolicitante ? (
-        <EditorRascunho key={itens.map((i) => `${i.id}:${i.qtd_solicitada}`).join()} pedido={p} itens={itens} onMudou={aposAcao} />
+        <EditorRascunho key={itens.map((i) => `${i.id}:${i.qtd_solicitada}`).join()} pedido={p} itens={itens} onMudou={aposAcao} onFalhaParcial={aposFalhaParcial} />
       ) : p.status === 'solicitado' && !p.externo && ehAtendente ? (
         <Aprovacao pedido={p} itens={itens} onMudou={aposAcao} />
       ) : p.status === 'aprovado' && ehAtendente ? (
@@ -138,7 +148,17 @@ export function PedidoDetalhe() {
 // ---------------------------------------------------------------------------
 type Linha = { material_id: string; qtd: string; id?: string }
 
-function EditorRascunho({ pedido, itens, onMudou }: { pedido: Pedido; itens: PedidoItem[]; onMudou: (m: string) => Promise<void> }) {
+function EditorRascunho({
+  pedido,
+  itens,
+  onMudou,
+  onFalhaParcial,
+}: {
+  pedido: Pedido
+  itens: PedidoItem[]
+  onMudou: (m: string) => Promise<void>
+  onFalhaParcial: (m: string) => Promise<void>
+}) {
   const { material, aceitaFracao } = useCatalogo()
   const [linhas, setLinhas] = useState<Linha[]>(() =>
     itens.map((i) => ({ id: i.id, material_id: i.material_id, qtd: String(i.qtd_solicitada).replace('.', ',') })),
@@ -159,19 +179,25 @@ function EditorRascunho({ pedido, itens, onMudou }: { pedido: Pedido; itens: Ped
     return null
   }
 
-  async function salvar(): Promise<boolean> {
+  /** Grava o rascunho. Diz se deu certo e se algo chegou a ser gravado. */
+  async function salvar(): Promise<{ ok: boolean; gravou: boolean }> {
     const e = validar()
     if (e) {
       setErro(e)
-      return false
+      return { ok: false, gravou: false }
     }
     setErro(null)
     const manter = new Set(linhas.filter((l) => l.id).map((l) => l.id))
     const remover = itens.filter((i) => !manter.has(i.id)).map((i) => i.id)
+    let gravou = false
     try {
-      if (remover.length) await dadosOuErro(supabase.from('pedido_itens').delete().in('id', remover))
+      if (remover.length) {
+        await dadosOuErro(supabase.from('pedido_itens').delete().in('id', remover))
+        gravou = true
+      }
       for (const l of linhas.filter((l) => l.id && original.get(l.id!) !== lerNumero(l.qtd))) {
         await dadosOuErro(supabase.from('pedido_itens').update({ qtd_solicitada: lerNumero(l.qtd) }).eq('id', l.id!))
+        gravou = true
       }
       const novos = linhas.filter((l) => !l.id)
       if (novos.length) {
@@ -180,11 +206,13 @@ function EditorRascunho({ pedido, itens, onMudou }: { pedido: Pedido; itens: Ped
             .from('pedido_itens')
             .insert(novos.map((l) => ({ pedido_id: pedido.id, material_id: l.material_id, qtd_solicitada: lerNumero(l.qtd) }))),
         )
+        gravou = true
       }
-      return true
+      return { ok: true, gravou }
     } catch (e) {
-      setErro(mensagemErro(e))
-      return false
+      if (gravou) await onFalhaParcial(mensagemErro(e))
+      else setErro(mensagemErro(e))
+      return { ok: false, gravou }
     }
   }
 
@@ -253,7 +281,7 @@ function EditorRascunho({ pedido, itens, onMudou }: { pedido: Pedido; itens: Ped
           disabled={ocupado || !sujo}
           onClick={() =>
             acao(async () => {
-              if (await salvar()) await onMudou('Itens salvos.')
+              if ((await salvar()).ok) await onMudou('Itens salvos.')
             })
           }
         >
@@ -264,10 +292,16 @@ function EditorRascunho({ pedido, itens, onMudou }: { pedido: Pedido; itens: Ped
           disabled={ocupado || linhas.length === 0}
           onClick={() =>
             acao(async () => {
-              if (sujo && !(await salvar())) return
+              let gravou = false
+              if (sujo) {
+                const r = await salvar()
+                if (!r.ok) return
+                gravou = r.gravou
+              }
               const { error } = await supabase.rpc('rpc_enviar_pedido', { p_pedido_id: pedido.id })
-              if (error) setErro(mensagemErro(error))
-              else await onMudou(`Pedido ${formatarDoc('PED', pedido.numero)} enviado.`)
+              if (!error) await onMudou(`Pedido ${formatarDoc('PED', pedido.numero)} enviado.`)
+              else if (gravou) await onFalhaParcial(`Itens salvos, mas o pedido não foi enviado: ${mensagemErro(error)}`)
+              else setErro(mensagemErro(error))
             })
           }
         >

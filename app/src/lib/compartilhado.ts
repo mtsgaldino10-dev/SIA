@@ -22,7 +22,7 @@ export function useNomes(): Map<string, string> {
 /** Saldo por material num almoxarifado. */
 export async function saldosDe(almoxId: string): Promise<Map<string, number>> {
   const linhas = await carregarTodos<{ material_id: string | null; saldo: number | null }>((de, ate) =>
-    supabase.from('v_saldo').select('material_id, saldo').eq('almox_id', almoxId).range(de, ate),
+    supabase.from('v_saldo').select('material_id, saldo').eq('almox_id', almoxId).order('material_id').range(de, ate),
   )
   return new Map(linhas.map((l) => [l.material_id ?? '', Number(l.saldo ?? 0)]))
 }

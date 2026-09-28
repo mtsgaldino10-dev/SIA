@@ -42,6 +42,7 @@ test('transferência só para base do mesmo supervisor, recebida com conferênci
   await entrar(page, 'victor')
   await page.goto('/movimentar/transferencia')
   await page.getByLabel('Origem').selectOption({ label: 'MNT · Mantena' })
+  await expect(page.getByLabel('Destino').locator('option')).toHaveCount(2)
   const destinos = await page.getByLabel('Destino').locator('option').allTextContents()
   expect(destinos).toEqual(['CRC · Coroaci', 'ITB · Itabirinha'])
   await page.getByLabel('Destino').selectOption({ label: 'ITB · Itabirinha' })
@@ -63,6 +64,7 @@ test('outro supervisor não transfere para as bases do Victor', async ({ page })
   await entrar(page, 'vinicius')
   await page.goto('/movimentar/transferencia')
   await page.getByLabel('Origem').selectOption({ label: 'RSP · Resplendor' })
+  await expect(page.getByLabel('Destino').locator('option')).toHaveCount(1)
   const destinos = await page.getByLabel('Destino').locator('option').allTextContents()
   expect(destinos).toEqual(['AIM · Aimorés'])
 })
@@ -108,4 +110,44 @@ test('ajuste de inventário mostra a diferença e exige justificativa', async ({
   await page.getByLabel('Almoxarifado').selectOption({ label: 'MNT · Mantena' })
   await expect(page.getByRole('row', { name: /Ajuste de inventário.*900001.*−1/ })).toBeVisible()
   await expect(page.getByRole('row', { name: /Saída.*900001.*−4/ })).toBeVisible()
+})
+
+test('resposta perdida na rede: tentar de novo não duplica a saída', async ({ page }) => {
+  await entrar(page, 'victor')
+  await page.goto('/movimentar/saida')
+  await page.getByLabel('Almoxarifado').selectOption({ label: 'MNT · Mantena' })
+  await adicionarItem(page, '900003', '1')
+  // A primeira chamada chega ao banco, mas a resposta não volta ao navegador
+  let perdida = false
+  await page.route('**/rest/v1/rpc/rpc_registrar_saida', async (route) => {
+    if (perdida) return route.continue()
+    perdida = true
+    await route.fetch()
+    await route.abort('failed')
+  })
+  await page.getByRole('button', { name: 'Registrar saída' }).click()
+  await expect(page.getByText(/Sem conexão/)).toBeVisible()
+  await page.getByRole('button', { name: 'Registrar saída' }).click()
+  await expect(page.getByText(/SAI-\d{6} registrada/)).toBeVisible()
+  // 10 − 2,5 devolvidos − 1 = 6,5 (e não 5,5)
+  await expect(await saldo(page, 'MNT · Mantena', '900003')).toContainText('6,5')
+})
+
+test('envio do pedido falha depois de salvar os itens: nova tentativa funciona', async ({ page }) => {
+  await entrar(page, 'victor')
+  await page.goto('/pedidos/novo')
+  await page.getByLabel('Almoxarifado solicitante').selectOption({ label: 'ITB · Itabirinha' })
+  await page.getByRole('button', { name: 'Criar rascunho' }).click()
+  await adicionarItem(page, '900001', '3')
+  let falhou = false
+  await page.route('**/rest/v1/rpc/rpc_enviar_pedido', async (route) => {
+    if (falhou) return route.continue()
+    falhou = true
+    await route.abort('failed')
+  })
+  await page.getByRole('button', { name: 'Enviar pedido' }).click()
+  await expect(page.getByText(/Sem conexão/)).toBeVisible()
+  await page.getByRole('button', { name: 'Enviar pedido' }).click()
+  await expect(page.locator('.badge', { hasText: 'Solicitado' }).first()).toBeVisible()
+  await expect(page.getByRole('row', { name: /900001.*3/ })).toBeVisible()
 })

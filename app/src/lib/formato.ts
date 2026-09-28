@@ -25,6 +25,8 @@ const ROTULOS: Record<string, string> = {
   chegou_depois: 'Chegou depois',
   baixa_transito: 'Baixa em trânsito',
   ajuste_origem: 'Ajuste na origem',
+  erro_contagem: 'Erro de contagem',
+  estorno_origem: 'Não saiu da origem',
   externo: 'Externo',
   // saídas e ajustes
   aplicacao: 'Aplicação',
@@ -120,13 +122,26 @@ export function hojeISO(agora: Date = new Date()): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: FUSO, year: 'numeric', month: '2-digit', day: '2-digit' }).format(agora)
 }
 
-/** Converte texto digitado ("1.234,5" ou "1234.5") em número; NaN se inválido. */
+/**
+ * Converte texto digitado em número; NaN se inválido. Padrão brasileiro:
+ * vírgula decimal e ponto de milhar ("1.234,5"). Sem vírgula, ponto em
+ * grupos de três é milhar ("1.500" = 1500); fora disso é decimal ("1.5").
+ */
 export function lerNumero(texto: string | number): number {
   if (typeof texto === 'number') return texto
   const limpo = texto.trim()
   if (limpo === '') return Number.NaN
-  const normalizado = limpo.includes(',') ? limpo.replace(/\./g, '').replace(',', '.') : limpo
+  let normalizado: string
+  if (limpo.includes(',')) normalizado = limpo.replace(/\./g, '').replace(',', '.')
+  else if (/^-?\d{1,3}(\.\d{3})+$/.test(limpo)) normalizado = limpo.replace(/\./g, '')
+  else normalizado = limpo
   return /^-?\d+(\.\d+)?$/.test(normalizado) ? Number(normalizado) : Number.NaN
+}
+
+/** Número para preencher um campo editável: vírgula decimal, sem milhar. */
+export function paraCampo(valor: number | string | null | undefined): string {
+  if (valor === null || valor === undefined || valor === '') return ''
+  return String(Number(valor)).replace('.', ',')
 }
 
 /** Retorna a mensagem de erro, ou null se a quantidade é válida. */
@@ -141,5 +156,6 @@ export function qtdValida(
   if (n < 0) return 'Quantidade não pode ser negativa.'
   if (n === 0 && !opcoes.permiteZero) return 'Informe uma quantidade maior que zero.'
   if (!aceitaFracao && !Number.isInteger(n)) return 'Esta unidade não aceita fração.'
+  if (Math.round(n * 1000) !== n * 1000) return 'Use no máximo 3 casas decimais.'
   return null
 }

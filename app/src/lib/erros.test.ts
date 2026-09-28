@@ -21,6 +21,9 @@ describe('mensagemErro', () => {
   })
   it('traduz falha de rede', () => {
     expect(mensagemErro(new TypeError('Failed to fetch'))).toBe('Sem conexão com o servidor. Verifique a internet e tente de novo.')
+    // supabase-js devolve a falha de rede como objeto, não como TypeError
+    expect(mensagemErro({ message: 'TypeError: Failed to fetch', code: '' })).toBe('Sem conexão com o servidor. Verifique a internet e tente de novo.')
+    expect(mensagemErro({ message: 'Load failed' })).toBe('Sem conexão com o servidor. Verifique a internet e tente de novo.')
   })
   it('traduz login inválido', () => {
     expect(mensagemErro({ message: 'Invalid login credentials' })).toBe('E-mail ou senha incorretos.')

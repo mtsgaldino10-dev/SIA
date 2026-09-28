@@ -4,7 +4,7 @@ import { useCatalogo } from '../auth/CatalogoContext'
 import { useSessao } from '../auth/SessaoContext'
 import { Aviso, Campo, Carregando, PaginaTopo, Vazio } from '../components/ui'
 import { mensagemErro } from '../lib/erros'
-import { formatarDoc, formatarQtd, hojeISO, lerNumero, qtdValida, rotuloStatus } from '../lib/formato'
+import { formatarDoc, formatarQtd, hojeISO, lerNumero, paraCampo, qtdValida, rotuloStatus } from '../lib/formato'
 import { supabase, type Enum, type Visao } from '../lib/supabase'
 import { tratamentosPermitidos } from '../lib/tratamentos'
 import { listaOuErro, useConsulta } from '../lib/useConsulta'
@@ -17,6 +17,8 @@ const EXPLICACAO: Record<Enum<'tipo_tratamento'>, string> = {
   chegou_depois: 'O material faltante apareceu. Entra no saldo do destino.',
   ajuste_origem: 'A origem mandou mais do que registrou. Baixa o saldo da origem.',
   externo: 'Divergência com o 3256, tratada fora do sistema.',
+  erro_contagem: 'A contagem foi lançada a mais por engano. Baixa o excesso do saldo do destino.',
+  estorno_origem: 'O material nunca saiu (separou menos ou mandou trocado). Volta ao saldo da origem.',
 }
 
 export function Divergencias() {
@@ -124,7 +126,7 @@ function FormTratamento({ div, onFeito }: { div: Div; onFeito: () => Promise<voi
     ehDestino: responsavelEm(div.destino_id ?? ''),
   })
   const [tipo, setTipo] = useState<Enum<'tipo_tratamento'> | ''>(opcoes[0] ?? '')
-  const [qtd, setQtd] = useState(formatarQtd(div.qtd_em_aberto))
+  const [qtd, setQtd] = useState(paraCampo(div.qtd_em_aberto))
   const [justificativa, setJustificativa] = useState('')
   const [data, setData] = useState(hojeISO())
   const [erro, setErro] = useState<string | null>(null)

@@ -6,6 +6,8 @@ import {
   formatarQtd,
   formatarSinal,
   hojeISO,
+  lerNumero,
+  paraCampo,
   qtdValida,
   rotuloStatus,
   tomStatus,
@@ -88,5 +90,33 @@ describe('formatarSinal', () => {
     expect(formatarSinal(2.5)).toBe('+2,5')
     expect(formatarSinal(0)).toBe('0')
     expect(formatarSinal('-1234.5')).toBe('−1.234,5')
+  })
+})
+
+describe('lerNumero no padrão brasileiro', () => {
+  it('ponto em grupos de três é separador de milhar', () => {
+    expect(lerNumero('1.000')).toBe(1000)
+    expect(lerNumero('1.500')).toBe(1500)
+    expect(lerNumero('12.345.678')).toBe(12345678)
+    expect(lerNumero('1.234,5')).toBe(1234.5)
+  })
+  it('ponto que não forma milhar é decimal (teclado sem vírgula)', () => {
+    expect(lerNumero('1.5')).toBe(1.5)
+    expect(lerNumero('2.25')).toBe(2.25)
+  })
+})
+
+describe('qtdValida: casas decimais', () => {
+  it('aceita até três casas', () => {
+    expect(qtdValida('1,125', true)).toBeNull()
+    expect(qtdValida('1,1255', true)).toBe('Use no máximo 3 casas decimais.')
+  })
+})
+
+describe('paraCampo', () => {
+  it('escreve número para edição sem separador de milhar', () => {
+    expect(paraCampo(1500)).toBe('1500')
+    expect(paraCampo('2.500')).toBe('2,5')
+    expect(paraCampo(null)).toBe('')
   })
 })

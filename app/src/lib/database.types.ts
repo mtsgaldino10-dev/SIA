@@ -1301,6 +1301,7 @@ export type Database = {
           p_data_envio?: string
           p_destino_id: string
           p_documento_ref?: string
+          p_id?: string
           p_itens: Json
           p_observacao?: string
           p_origem_id: string
@@ -1323,6 +1324,7 @@ export type Database = {
         Args: {
           p_almox_id: string
           p_data_ocorrencia?: string
+          p_id?: string
           p_itens: Json
           p_justificativa: string
           p_tipo: Database["public"]["Enums"]["tipo_ajuste"]
@@ -1358,6 +1360,7 @@ export type Database = {
         Args: {
           p_almox_id: string
           p_data_ocorrencia?: string
+          p_id?: string
           p_itens: Json
           p_justificativa?: string
           p_motivo?: Database["public"]["Enums"]["motivo_saida"]
@@ -1411,6 +1414,8 @@ export type Database = {
         | "baixa_transito"
         | "ajuste_origem"
         | "externo"
+        | "erro_contagem"
+        | "estorno_origem"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1575,6 +1580,8 @@ export const Constants = {
         "baixa_transito",
         "ajuste_origem",
         "externo",
+        "erro_contagem",
+        "estorno_origem",
       ],
     },
   },

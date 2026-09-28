@@ -62,6 +62,8 @@ export function Saida() {
   const [erro, setErro] = useState<string | null>(null)
   const [ok, setOk] = useState<string | null>(null)
   const [ocupado, setOcupado] = useState(false)
+  // Id gerado aqui: repetir o envio após uma resposta perdida não duplica a saída
+  const [idRegistro, setIdRegistro] = useState(() => crypto.randomUUID())
 
   if (!almoxResponsavel.length) return <Vazio>Você não é responsável por nenhum almoxarifado.</Vazio>
 
@@ -79,9 +81,11 @@ export function Saida() {
       p_data_ocorrencia: data,
       p_justificativa: justificativa || undefined,
       p_observacao: observacao || undefined,
+      p_id: idRegistro,
     })
     setOcupado(false)
     if (error) return setErro(mensagemErro(error))
+    setIdRegistro(crypto.randomUUID())
     const { data: s } = await supabase.from('saidas').select('numero').eq('id', id).single()
     setOk(`${formatarDoc('SAI', s?.numero ?? 0)} registrada.`)
     setLinhas([])
@@ -144,6 +148,7 @@ export function RemessaAvulsa({ tipo }: { tipo: 'transferencia' | 'devolucao' })
   const [observacao, setObservacao] = useState('')
   const [erro, setErro] = useState<string | null>(null)
   const [ocupado, setOcupado] = useState(false)
+  const [idRegistro] = useState(() => crypto.randomUUID())
   const pai = almox(almox(origemId)?.pai_id)
 
   useEffect(() => {
@@ -169,6 +174,7 @@ export function RemessaAvulsa({ tipo }: { tipo: 'transferencia' | 'devolucao' })
       p_itens: linhas.map((l) => ({ material_id: l.material_id, qtd_enviada: lerNumero(l.qtd) })),
       p_data_envio: data,
       p_observacao: observacao || undefined,
+      p_id: idRegistro,
     })
     setOcupado(false)
     if (error) setErro(mensagemErro(error))
@@ -239,6 +245,7 @@ export function Ajuste() {
   const [erro, setErro] = useState<string | null>(null)
   const [ok, setOk] = useState<string | null>(null)
   const [ocupado, setOcupado] = useState(false)
+  const [idRegistro, setIdRegistro] = useState(() => crypto.randomUUID())
 
   if (!almoxResponsavel.length) return <Vazio>Você não é responsável por nenhum almoxarifado.</Vazio>
 
@@ -258,9 +265,11 @@ export function Ajuste() {
       p_justificativa: justificativa,
       p_itens: linhas.map((l) => ({ material_id: l.material_id, qtd_contada: lerNumero(l.contado) })),
       p_data_ocorrencia: data,
+      p_id: idRegistro,
     })
     setOcupado(false)
     if (error) return setErro(mensagemErro(error))
+    setIdRegistro(crypto.randomUUID())
     const { data: a } = await supabase.from('ajustes').select('numero').eq('id', id).single()
     setOk(`${formatarDoc('AJU', a?.numero ?? 0)} registrado. O ajuste aparece em destaque no painel da gestão.`)
     setLinhas([])

@@ -11,10 +11,17 @@ export function tratamentosPermitidos(p: {
   ehDestino: boolean
 }): Enum<'tipo_tratamento'>[] {
   const falta = p.diferenca > 0
+  const t: Enum<'tipo_tratamento'>[] = []
   if (p.externa) {
-    if (!p.ehDestino) return []
-    return falta ? ['externo', 'chegou_depois'] : ['externo']
+    if (p.ehDestino) t.push('externo', falta ? 'chegou_depois' : 'erro_contagem')
+    return t
   }
-  if (!falta) return p.ehOrigem ? ['ajuste_origem'] : []
-  return [...(p.ehOrigem ? (['reenvio', 'baixa_transito'] as const) : []), ...(p.ehDestino ? (['chegou_depois'] as const) : [])]
+  if (falta) {
+    if (p.ehOrigem) t.push('reenvio', 'baixa_transito', 'estorno_origem')
+    if (p.ehDestino) t.push('chegou_depois')
+  } else {
+    if (p.ehOrigem) t.push('ajuste_origem')
+    if (p.ehDestino) t.push('erro_contagem')
+  }
+  return t
 }
