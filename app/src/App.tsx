@@ -22,6 +22,7 @@ import { RemessaDetalhe } from './pages/remessas/RemessaDetalhe'
 import { Remessas } from './pages/remessas/Remessas'
 import { Historico } from './pages/Historico'
 import { Ajuste, Movimentar, RemessaAvulsa, Saida } from './pages/movimentar/Movimentar'
+import { Painel } from './pages/Painel'
 import { Saldo } from './pages/Saldo'
 
 function Protegida({ children }: { children: ReactNode }) {
@@ -86,6 +87,7 @@ export default function App() {
               <Route path="movimentar/devolucao" element={<RemessaAvulsa key="devolucao" tipo="devolucao" />} />
               <Route path="movimentar/ajuste" element={<Ajuste />} />
               <Route path="historico" element={<Historico />} />
+              <Route path="painel" element={<Painel />} />
               <Route path="entradas" element={<Entradas />} />
               <Route path="entradas/receber" element={<ReceberExterno />} />
               <Route path="admin/almoxarifados" element={<SoAdmin><AdminAlmoxarifados /></SoAdmin>} />

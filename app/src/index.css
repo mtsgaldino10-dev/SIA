@@ -639,3 +639,13 @@ dl.dados dd { margin: 0; }
   .guia { padding: 0; max-width: none; }
   @page { margin: 14mm; }
 }
+
+/* Etiquetas compactas 2×2 (resumo por base no início) */
+.grade-etiquetas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.grade-etiquetas .etiqueta { padding: 10px 12px; }
+.grade-etiquetas .etiqueta .valor { font-size: 1.5rem; }
+.grade-etiquetas .etiqueta .legenda { font-size: 0.8rem; }

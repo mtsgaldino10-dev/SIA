@@ -92,7 +92,7 @@ test('admin carrega o saldo inicial do 211 e de Mantena', async ({ page }) => {
 
 test('supervisor não vê cadastros nem base de outro supervisor', async ({ page }) => {
   await entrar(page, 'victor')
-  await expect(page.getByRole('link', { name: 'Materiais' })).toHaveCount(0)
+  await expect(page.getByRole('link', { name: 'Materiais', exact: true })).toHaveCount(0)
   await page.getByRole('link', { name: 'Saldo', exact: true }).first().click()
   await expect(page.getByRole('heading', { name: 'Saldo', level: 1 })).toBeVisible()
   const opcoes = await page.getByLabel('Almoxarifado').locator('option').allTextContents()

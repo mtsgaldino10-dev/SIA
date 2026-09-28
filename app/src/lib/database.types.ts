@@ -1228,6 +1228,20 @@ export type Database = {
       }
     }
     Functions: {
+      fn_consumo: {
+        Args: { p_ate: string; p_de: string }
+        Returns: {
+          almox_codigo: string
+          almox_id: string
+          almox_nome: string
+          codigo_sap: string
+          descricao: string
+          material_id: string
+          quantidade: number
+          unidade: string
+          valor: number
+        }[]
+      }
       fn_destinos_transferencia: {
         Args: { p_origem_id: string }
         Returns: {
@@ -1250,6 +1264,27 @@ export type Database = {
       fn_eh_gestao: { Args: never; Returns: boolean }
       fn_eh_responsavel: { Args: { p_almox_id: string }; Returns: boolean }
       fn_hoje: { Args: never; Returns: string }
+      fn_indicadores: {
+        Args: { p_ate: string; p_de: string }
+        Returns: {
+          ajustes_qtd: number
+          ajustes_valor_abs: number
+          almox_codigo: string
+          almox_id: string
+          almox_nome: string
+          almox_tipo: Database["public"]["Enums"]["tipo_almox"]
+          indice_divergencia: number
+          perda_transito_qtd: number
+          perda_transito_valor: number
+          qtd_enviada: number
+          qtd_solicitada: number
+          remessas_com_divergencia: number
+          remessas_recebidas: number
+          saidas_valor: number
+          taxa_atendimento: number
+          tempo_transito_medio: number
+        }[]
+      }
       fn_pode_ver: { Args: { p_almox_id: string }; Returns: boolean }
       fn_pode_ver_foto: { Args: { p_nome: string }; Returns: boolean }
       fn_pode_ver_remessa: { Args: { p_remessa_id: string }; Returns: boolean }
