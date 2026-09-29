@@ -26,7 +26,7 @@ describe('mensagemErro', () => {
     expect(mensagemErro({ message: 'Load failed' })).toBe('Sem conexão com o servidor. Verifique a internet e tente de novo.')
   })
   it('traduz login inválido', () => {
-    expect(mensagemErro({ message: 'Invalid login credentials' })).toBe('E-mail ou senha incorretos.')
+    expect(mensagemErro({ message: 'Invalid login credentials' })).toBe('Usuário ou senha incorretos.')
   })
   it('tem mensagem genérica para o desconhecido', () => {
     expect(mensagemErro(undefined)).toBe('Algo deu errado. Tente de novo.')

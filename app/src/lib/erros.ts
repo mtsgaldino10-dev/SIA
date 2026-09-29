@@ -12,7 +12,7 @@ export function mensagemErro(erro: unknown): string {
   if (/Failed to fetch|NetworkError|Load failed|network request failed/i.test(msg)) {
     return 'Sem conexão com o servidor. Verifique a internet e tente de novo.'
   }
-  if (/Invalid login credentials/i.test(msg)) return 'E-mail ou senha incorretos.'
+  if (/Invalid login credentials/i.test(msg)) return 'Usuário ou senha incorretos.'
   if (/row-level security|permission denied/i.test(msg)) return 'Você não tem permissão para esta ação.'
   if (code === '23505') return 'Registro repetido. Este item já existe.'
   if (code === '23503') return 'Referência inválida: um dos itens não existe mais.'

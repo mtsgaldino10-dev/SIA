@@ -18,7 +18,7 @@ export const FOTO = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fix
 export async function entrar(page: Page, quem: Quem) {
   const u = USUARIOS[quem]
   await page.goto('/login')
-  await page.getByLabel('E-mail').fill(u.email)
+  await page.getByLabel('Usuário').fill(u.email)
   await page.getByLabel('Senha').fill(u.senha)
   await page.getByRole('button', { name: 'Entrar' }).click()
   await expect(page.getByRole('heading', { level: 1 })).toContainText(`Olá, ${u.nome.split(' ')[0]}`)

@@ -72,7 +72,7 @@ Depois de publicar, cadastre a URL em **Authentication → URL Configuration** n
 
 ## Primeiro acesso (fase 6)
 
-1. **Criar os usuários** no painel do Supabase (Authentication → Add user), com e-mail e senha. Em *User metadata*, use `{"nome": "Nome da pessoa"}`; o perfil é criado sozinho.
+1. **Criar os usuários** no painel do Supabase (Authentication → Add user), com e-mail e senha. Em *User metadata*, use `{"nome": "Nome da pessoa"}`; o perfil é criado sozinho. No app, quem tem e-mail `@engelmig.com.br` entra digitando só o usuário (ex.: `matheus.galdino`); outros domínios entram com o e-mail completo.
 2. **Promover o primeiro admin** no SQL Editor:
    ```sql
    update perfis set papel = 'admin' where email = 'seu-email@empresa.com';
