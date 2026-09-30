@@ -39,6 +39,7 @@ insert into atribuicoes (almox_id, usuario_id, funcao) values
 insert into materiais (id, codigo_sap, descricao, unidade, preco) values
   ('10000000-0000-4000-a000-0000000000b1', '8001', 'PARAFUSO', 'PC', 2.00),
   ('10000000-0000-4000-a000-0000000000b2', '8002', 'CONECTOR', 'PC', 10.00);
+insert into equipes (id, almox_id, nome) values ('20000000-0000-4000-a000-0000000000e1', tests.a('MNT'), 'Equipe 1');
 
 -- Saldo inicial no 211 e em Mantena
 select tests.como('00000000-0000-4000-a000-0000000000a1');
@@ -85,7 +86,8 @@ select rpc_criar_remessa_avulsa('transferencia', tests.a('MNT'), tests.a('ITB'),
 
 -- Saídas: 4 parafusos e 1 conector; ajuste de inventário: conta 15 parafusos (saldo 10+18−3−1−4 = 20 → −5)
 select rpc_registrar_saida(tests.a('MNT'),
-  '[{"material_id":"10000000-0000-4000-a000-0000000000b1","quantidade":4},{"material_id":"10000000-0000-4000-a000-0000000000b2","quantidade":1}]');
+  '[{"material_id":"10000000-0000-4000-a000-0000000000b1","quantidade":4},{"material_id":"10000000-0000-4000-a000-0000000000b2","quantidade":1}]',
+  'aplicacao', null, null, null, null, '20000000-0000-4000-a000-0000000000e1', 'João');
 reset role;
 select tests.como('00000000-0000-4000-a000-0000000000a3');
 select rpc_registrar_ajuste(tests.a('MNT'), 'inventario', 'Contagem',

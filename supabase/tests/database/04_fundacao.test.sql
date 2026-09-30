@@ -177,5 +177,91 @@ select tests.como('ADMIN');
 select lives_ok($$ insert into motivos_reducao (descricao, ordem) values ('Material descontinuado', 50) $$, 'admin cadastra motivo');
 reset role;
 
+-- ---------------------------------------------------------------------
+-- F. Equipes: por base, mantidas pelo supervisor da base, pela gestão e
+--    pelo admin; não são apagadas
+-- ---------------------------------------------------------------------
+-- id da equipe pelo nome, sem passar pelo RLS de quem consulta
+create function tests.equipe(p_nome text) returns uuid language sql stable security definer as $$
+  select id from public.equipes where nome = p_nome
+$$;
+grant execute on function tests.equipe(text) to authenticated;
+
+select tests.como('VICTOR');
+select lives_ok($$ insert into equipes (almox_id, nome) values (tests.a('MNT'), 'Equipe 12') $$, 'supervisor cadastra equipe da própria base');
+select throws_ok($$ insert into equipes (almox_id, nome) values (tests.a('MNT'), 'EQUIPE 12') $$, '23505', null, 'nome repetido na base, mesmo com outra caixa');
+select throws_ok($$ insert into equipes (almox_id, nome) values (tests.a('MNT'), 'Equipe 13 ') $$, '23514', null, 'nome com espaço sobrando é recusado');
+select throws_ok($$ insert into equipes (almox_id, nome) values (tests.a('RSP'), 'Equipe 1') $$, '42501', null, 'supervisor não cadastra equipe em base de outro');
+select throws_ok($$ delete from equipes $$, '42501', null, 'equipe não é apagada');
+reset role;
+select is((select criado_por from equipes where nome = 'Equipe 12'), tests.u('VICTOR'), 'equipe guarda quem cadastrou');
+
+select tests.como('GESTORA');
+select lives_ok($$ insert into equipes (almox_id, nome) values (tests.a('ITB'), 'Equipe 7') $$, 'gestora cadastra equipe numa base do 211');
+select throws_like($$ insert into equipes (almox_id, nome) values (tests.a('211'), 'Equipe do 211') $$,
+  'Equipe é cadastrada em uma base%', 'equipe não fica no 211');
+select throws_ok($$ insert into equipes (almox_id, nome) values (tests.a('B2'), 'Equipe B') $$, '42501', null, 'gestora não cadastra equipe em base de outro regional');
+reset role;
+
+select tests.como('ADMIN');
+select lives_ok($$ insert into equipes (almox_id, nome) values (tests.a('B2'), 'Equipe B') $$, 'admin cadastra equipe em qualquer base');
+reset role;
+
+select tests.como('VICTOR');
+select is((select count(*) from equipes)::int, 2, 'supervisor vê só as equipes das próprias bases');
+reset role;
+
+-- ---------------------------------------------------------------------
+-- G. Saída com equipe e quem retirou
+-- ---------------------------------------------------------------------
+select tests.como('VICTOR');
+select throws_like(
+  $$ select rpc_registrar_saida(tests.a('MNT'), '[{"material_id":"10000000-0000-4000-a000-0000000000e1","quantidade":1}]') $$,
+  'Informe a equipe que retirou o material.', 'aplicação na base exige equipe');
+select throws_like(
+  $$ select rpc_registrar_saida(tests.a('MNT'), '[{"material_id":"10000000-0000-4000-a000-0000000000e1","quantidade":1}]',
+       'aplicacao', null, null, null, null, tests.equipe('Equipe 12'), '   ') $$,
+  'Informe o nome de quem retirou o material.', 'e o nome de quem retirou');
+select throws_like(
+  $$ select rpc_registrar_saida(tests.a('MNT'), '[{"material_id":"10000000-0000-4000-a000-0000000000e1","quantidade":1}]',
+       'aplicacao', null, null, null, null, tests.equipe('Equipe 7'), 'João') $$,
+  'A equipe Equipe 7 não é de Mantena.', 'equipe de outra base é recusada');
+select lives_ok(
+  $$ select rpc_registrar_saida(tests.a('MNT'), '[{"material_id":"10000000-0000-4000-a000-0000000000e1","quantidade":2}]',
+       'aplicacao', null, null, 'NS 4455', null, tests.equipe('Equipe 12'), '  João Silva ') $$,
+  'saída de aplicação com equipe e quem retirou');
+select lives_ok(
+  $$ select rpc_registrar_saida(tests.a('MNT'), '[{"material_id":"10000000-0000-4000-a000-0000000000e1","quantidade":1}]',
+       'perda', null, 'Caiu do caminhão') $$,
+  'perda não exige equipe');
+reset role;
+select is((select retirado_por_nome from saidas where observacao = 'NS 4455'), 'João Silva', 'nome gravado sem espaços sobrando');
+select is((select equipe_id from saidas where observacao = 'NS 4455'), tests.equipe('Equipe 12'), 'equipe gravada na saída');
+select is(tests.saldo('MNT'), 17.000, 'saídas baixaram o saldo (20 − 2 − 1)');
+
+select tests.como('VICTOR');
+select throws_like($$ update equipes set nome = 'Equipe 12A' where nome = 'Equipe 12' $$,
+  'A equipe Equipe 12 já tem saídas registradas%', 'equipe usada não muda de nome');
+select lives_ok($$ update equipes set ativa = false where nome = 'Equipe 12' $$, 'equipe usada pode ser inativada');
+select throws_like(
+  $$ select rpc_registrar_saida(tests.a('MNT'), '[{"material_id":"10000000-0000-4000-a000-0000000000e1","quantidade":1}]',
+       'aplicacao', null, null, null, null, tests.equipe('Equipe 12'), 'João') $$,
+  'A equipe Equipe 12 está inativa%', 'equipe inativa é recusada');
+reset role;
+
+select tests.como('GESTORA');
+select lives_ok(
+  $$ select rpc_registrar_saida(tests.a('211'), '[{"material_id":"10000000-0000-4000-a000-0000000000e1","quantidade":1}]',
+       'aplicacao', null, null, null, null, tests.equipe('Equipe 7'), 'Pedro') $$,
+  'saída no 211 para equipe de uma base do 211');
+select lives_ok(
+  $$ select rpc_registrar_saida(tests.a('211'), '[{"material_id":"10000000-0000-4000-a000-0000000000e1","quantidade":1}]') $$,
+  'no 211 a equipe é opcional');
+select throws_like(
+  $$ select rpc_registrar_saida(tests.a('211'), '[{"material_id":"10000000-0000-4000-a000-0000000000e1","quantidade":1}]',
+       'aplicacao', null, null, null, null, tests.equipe('Equipe B'), 'Pedro') $$,
+  'A equipe Equipe B não é de Almoxarifado regional.', 'equipe de base de outro regional é recusada');
+reset role;
+
 select * from finish();
 rollback;

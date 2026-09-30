@@ -109,6 +109,7 @@ insert into materiais (id, codigo_sap, descricao, unidade, preco, ativo) values
   (tests.m('CONEC'),   '9002', 'CONECTOR TESTE',  'PC', 10.00, true),
   (tests.m('CABO'),    '9003', 'CABO TESTE',      'M',  4.00,  true),
   (tests.m('INATIVO'), '9004', 'MATERIAL INATIVO', 'PC', null,  false);
+insert into equipes (id, almox_id, nome) values ('20000000-0000-4000-a000-000000000001', tests.a('MNT'), 'Equipe 12');
 
 select throws_ok(
   $$ insert into atribuicoes (almox_id, usuario_id, funcao) values (tests.a('3256'), tests.u('C211'), 'responsavel') $$,
@@ -385,7 +386,8 @@ select is((select count(*) from v_divergencias_abertas)::int, 0, 'nenhuma diverg
 -- ---------------------------------------------------------------------
 select tests.como('VICTOR');
 select throws_like(
-  $$ select rpc_registrar_saida(tests.a('MNT'), tests.j('[{"material_id":"PARAF","quantidade":100}]')) $$,
+  $$ select rpc_registrar_saida(tests.a('MNT'), tests.j('[{"material_id":"PARAF","quantidade":100}]'), 'aplicacao', null, null, null, null,
+       '20000000-0000-4000-a000-000000000001', 'João') $$,
   'Saldo insuficiente em Mantena%Faça um ajuste de inventário%', 'saída acima do saldo é bloqueada');
 select throws_like(
   $$ select rpc_registrar_saida(tests.a('MNT'), tests.j('[{"material_id":"PARAF","quantidade":1}]'), 'perda') $$,
@@ -394,8 +396,9 @@ select throws_ok(
   $$ select rpc_registrar_saida(tests.a('RSP'), tests.j('[{"material_id":"PARAF","quantidade":1}]')) $$,
   '42501', null, 'não registra saída em base de outro');
 select lives_ok(
-  $$ select rpc_registrar_saida(tests.a('MNT'), tests.j('[{"material_id":"PARAF","quantidade":4}]'), 'aplicacao', null, null, 'Equipe 12, NS 4455') $$,
-  'saída de aplicação');
+  $$ select rpc_registrar_saida(tests.a('MNT'), tests.j('[{"material_id":"PARAF","quantidade":4}]'), 'aplicacao', null, null, 'NS 4455', null,
+       '20000000-0000-4000-a000-000000000001', 'João') $$,
+  'saída de aplicação com equipe e quem retirou');
 reset role;
 select is(tests.saldo('MNT', 'PARAF'), 15.000, 'saída baixa o saldo');
 select tests.como('C211');

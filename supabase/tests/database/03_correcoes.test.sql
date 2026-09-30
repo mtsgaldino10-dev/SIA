@@ -44,6 +44,7 @@ insert into atribuicoes (almox_id, usuario_id, funcao) values
 insert into materiais (id, codigo_sap, descricao, unidade) values
   ('10000000-0000-4000-a000-0000000000d1', '7001', 'PARAFUSO', 'PC'),
   ('10000000-0000-4000-a000-0000000000d2', '7002', 'CONECTOR', 'PC');
+insert into equipes (id, almox_id, nome) values ('20000000-0000-4000-a000-0000000000f1', tests.a('MNT'), 'Equipe 1');
 
 -- ---------------------------------------------------------------------
 -- I4: implantação (re)carregável até a operação começar
@@ -67,9 +68,11 @@ reset role;
 insert into tests.ctx values ('sai', gen_random_uuid()), ('tra', gen_random_uuid()), ('aju', gen_random_uuid());
 select tests.como('00000000-0000-4000-a000-0000000000c4');
 select is(rpc_registrar_saida(tests.a('MNT'), '[{"material_id":"10000000-0000-4000-a000-0000000000d1","quantidade":5}]',
-  'aplicacao', null, null, null, tests.id('sai')), tests.id('sai'), 'saída usa o id gerado pelo app');
+  'aplicacao', null, null, null, tests.id('sai'), '20000000-0000-4000-a000-0000000000f1', 'João'), tests.id('sai'),
+  'saída usa o id gerado pelo app');
 select is(rpc_registrar_saida(tests.a('MNT'), '[{"material_id":"10000000-0000-4000-a000-0000000000d1","quantidade":5}]',
-  'aplicacao', null, null, null, tests.id('sai')), tests.id('sai'), 'repetir a saída devolve o mesmo registro');
+  'aplicacao', null, null, null, tests.id('sai'), '20000000-0000-4000-a000-0000000000f1', 'João'), tests.id('sai'),
+  'repetir a saída devolve o mesmo registro');
 select is(tests.saldo('MNT', '10000000-0000-4000-a000-0000000000d1'), 25.000, 'saldo baixou uma vez só');
 
 select is(rpc_criar_remessa_avulsa('transferencia', tests.a('MNT'), tests.a('ITB'),

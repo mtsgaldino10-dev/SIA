@@ -287,6 +287,55 @@ export type Database = {
           },
         ]
       }
+      equipes: {
+        Row: {
+          almox_id: string
+          ativa: boolean
+          criado_em: string
+          criado_por: string | null
+          id: string
+          nome: string
+        }
+        Insert: {
+          almox_id: string
+          ativa?: boolean
+          criado_em?: string
+          criado_por?: string | null
+          id?: string
+          nome: string
+        }
+        Update: {
+          almox_id?: string
+          ativa?: boolean
+          criado_em?: string
+          criado_por?: string | null
+          id?: string
+          nome?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipes_almox_id_fkey"
+            columns: ["almox_id"]
+            isOneToOne: false
+            referencedRelation: "almoxarifados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipes_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "perfis"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipes_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "v_usuarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       materiais: {
         Row: {
           ativo: boolean
@@ -925,6 +974,7 @@ export type Database = {
         Row: {
           almox_id: string
           data_ocorrencia: string
+          equipe_id: string | null
           id: string
           justificativa: string | null
           motivo: Database["public"]["Enums"]["motivo_saida"]
@@ -932,10 +982,12 @@ export type Database = {
           observacao: string | null
           registrado_em: string
           registrado_por: string
+          retirado_por_nome: string | null
         }
         Insert: {
           almox_id: string
           data_ocorrencia: string
+          equipe_id?: string | null
           id?: string
           justificativa?: string | null
           motivo?: Database["public"]["Enums"]["motivo_saida"]
@@ -943,10 +995,12 @@ export type Database = {
           observacao?: string | null
           registrado_em?: string
           registrado_por: string
+          retirado_por_nome?: string | null
         }
         Update: {
           almox_id?: string
           data_ocorrencia?: string
+          equipe_id?: string | null
           id?: string
           justificativa?: string | null
           motivo?: Database["public"]["Enums"]["motivo_saida"]
@@ -954,6 +1008,7 @@ export type Database = {
           observacao?: string | null
           registrado_em?: string
           registrado_por?: string
+          retirado_por_nome?: string | null
         }
         Relationships: [
           {
@@ -961,6 +1016,13 @@ export type Database = {
             columns: ["almox_id"]
             isOneToOne: false
             referencedRelation: "almoxarifados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saidas_equipe_id_fkey"
+            columns: ["equipe_id"]
+            isOneToOne: false
+            referencedRelation: "equipes"
             referencedColumns: ["id"]
           },
           {
@@ -1389,11 +1451,13 @@ export type Database = {
         Args: {
           p_almox_id: string
           p_data_ocorrencia?: string
+          p_equipe_id?: string
           p_id?: string
           p_itens: Json
           p_justificativa?: string
           p_motivo?: Database["public"]["Enums"]["motivo_saida"]
           p_observacao?: string
+          p_retirado_por_nome?: string
         }
         Returns: string
       }
