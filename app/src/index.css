@@ -169,11 +169,40 @@ kbd {
   display: contents;
 }
 .menu-grupo {
-  margin: var(--esp-7) var(--esp-5) var(--esp-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--esp-6);
+  padding: var(--esp-2) var(--esp-5);
+  border: 0;
+  border-radius: var(--raio);
+  background: none;
+  font: inherit;
   font-size: var(--tam-grupo-menu);
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-align: left;
   color: var(--menu-grupo);
+  cursor: pointer;
+}
+.menu-grupo:hover {
+  color: var(--menu-texto);
+}
+.menu-grupo .icone {
+  width: 0.8rem;
+  height: 0.8rem;
+  transition: transform 0.15s;
+}
+.menu-grupo[aria-expanded='false'] .icone {
+  transform: rotate(-90deg);
+}
+.menu-itens {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-1);
+}
+.menu-itens[hidden] {
+  display: none;
 }
 .menu-lateral nav a {
   display: flex;
@@ -185,13 +214,27 @@ kbd {
   text-decoration: none;
   font-weight: var(--peso-medio);
 }
+.menu-lateral nav a .icone {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.8;
+}
 .menu-lateral nav a:hover {
   background: var(--menu-hover);
 }
 .menu-lateral nav a[aria-current='page'] {
   background: var(--menu-ativo);
   color: var(--menu-texto-ativo);
-  box-shadow: 0 0 0 1px var(--borda), var(--sombra-cartao);
+}
+.menu-lateral nav a[aria-current='page']:hover {
+  background: var(--menu-ativo-hover);
+}
+.menu-lateral nav a[aria-current='page'] .icone {
+  opacity: 1;
+}
+.menu-lateral nav a[aria-current='page'] .menu-contagem:not(.alerta) {
+  background: color-mix(in srgb, var(--menu-texto-ativo) 25%, transparent);
 }
 .menu-contagem {
   margin-left: auto;
@@ -226,9 +269,6 @@ kbd {
 }
 .menu-rodape button:hover {
   border-color: var(--cor-estrutura);
-}
-.menu-rodape .produto {
-  margin-top: var(--esp-6);
 }
 
 /* Folha "Mais" no celular */

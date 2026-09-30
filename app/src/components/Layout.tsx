@@ -1,13 +1,31 @@
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useState, type ReactNode } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useCatalogo } from '../auth/CatalogoContext'
 import { useSessao } from '../auth/SessaoContext'
 import { rotuloStatus } from '../lib/formato'
 import { supabase } from '../lib/supabase'
 import { BuscaComando, DialogoBusca } from './BuscaGlobal'
+import {
+  IcAlmoxarifados,
+  IcDivergencias,
+  IcEntradas,
+  IcHistorico,
+  IcInicio,
+  IcMateriais,
+  IcMovimentar,
+  IcPainel,
+  IcPedidos,
+  IcRemessas,
+  IcSaida,
+  IcSaldo,
+  IcSaldoInicial,
+  IcUnidades,
+  IcUsuarios,
+} from './icones'
+import { MenuGrupo } from './MenuGrupo'
 import { Aviso, Marca } from './ui'
 
-type ItemMenu = { para: string; rotulo: string; grupo: string; curto?: string; principal?: boolean }
+type ItemMenu = { para: string; rotulo: string; grupo: string; icone: ReactNode; curto?: string; principal?: boolean }
 
 /** Itens de navegação conforme papel e atribuições. */
 // eslint-disable-next-line react-refresh/only-export-components
@@ -18,24 +36,24 @@ export function useMenu(): ItemMenu[] {
   const operaRegional = almoxResponsavel.some((a) => a.tipo === 'regional')
   const ve = veTudo || almoxVisiveis.length > 0
 
-  const itens: ItemMenu[] = [{ para: '/', rotulo: 'Início', grupo: 'Operação', principal: true }]
+  const itens: ItemMenu[] = [{ para: '/', rotulo: 'Início', grupo: 'Operação', icone: <IcInicio />, principal: true }]
   if (ve) {
-    itens.push({ para: '/saldo', rotulo: 'Saldo', grupo: 'Operação', principal: true })
-    itens.push({ para: '/pedidos', rotulo: 'Pedidos', grupo: 'Operação', principal: true })
-    itens.push({ para: '/remessas', rotulo: 'Remessas', grupo: 'Operação', principal: true })
-    itens.push({ para: '/divergencias', rotulo: 'Divergências', grupo: 'Operação' })
+    itens.push({ para: '/saldo', rotulo: 'Saldo', grupo: 'Operação', icone: <IcSaldo />, principal: true })
+    itens.push({ para: '/pedidos', rotulo: 'Pedidos', grupo: 'Operação', icone: <IcPedidos />, principal: true })
+    itens.push({ para: '/remessas', rotulo: 'Remessas', grupo: 'Operação', icone: <IcRemessas />, principal: true })
+    itens.push({ para: '/divergencias', rotulo: 'Divergências', grupo: 'Operação', icone: <IcDivergencias /> })
   }
-  if (opera) itens.push({ para: '/movimentar', rotulo: 'Movimentar', grupo: 'Operação' })
-  if (operaRegional) itens.push({ para: '/entradas', rotulo: 'Entradas do 3256', grupo: 'Operação' })
-  if (operaBase && !operaRegional) itens.push({ para: '/movimentar/saida', rotulo: 'Registrar saída', grupo: 'Operação' })
-  if (ve) itens.push({ para: '/historico', rotulo: 'Histórico', grupo: 'Operação' })
-  if (veTudo) itens.push({ para: '/painel', rotulo: 'Painel da gestão', grupo: 'Gestão' })
+  if (opera) itens.push({ para: '/movimentar', rotulo: 'Movimentar', grupo: 'Operação', icone: <IcMovimentar /> })
+  if (operaRegional) itens.push({ para: '/entradas', rotulo: 'Entradas do 3256', grupo: 'Operação', icone: <IcEntradas /> })
+  if (operaBase && !operaRegional) itens.push({ para: '/movimentar/saida', rotulo: 'Registrar saída', grupo: 'Operação', icone: <IcSaida /> })
+  if (ve) itens.push({ para: '/historico', rotulo: 'Histórico', grupo: 'Operação', icone: <IcHistorico /> })
+  if (veTudo) itens.push({ para: '/painel', rotulo: 'Painel da gestão', grupo: 'Gestão', icone: <IcPainel /> })
   if (ehAdmin) {
-    itens.push({ para: '/admin/almoxarifados', rotulo: 'Almoxarifados', grupo: 'Cadastros' })
-    itens.push({ para: '/admin/usuarios', rotulo: 'Usuários e atribuições', grupo: 'Cadastros' })
-    itens.push({ para: '/admin/materiais', rotulo: 'Materiais', grupo: 'Cadastros' })
-    itens.push({ para: '/admin/unidades', rotulo: 'Unidades', grupo: 'Cadastros' })
-    itens.push({ para: '/admin/saldo-inicial', rotulo: 'Saldo inicial', grupo: 'Cadastros' })
+    itens.push({ para: '/admin/almoxarifados', rotulo: 'Almoxarifados', grupo: 'Cadastros', icone: <IcAlmoxarifados /> })
+    itens.push({ para: '/admin/usuarios', rotulo: 'Usuários e atribuições', grupo: 'Cadastros', icone: <IcUsuarios /> })
+    itens.push({ para: '/admin/materiais', rotulo: 'Materiais', grupo: 'Cadastros', icone: <IcMateriais /> })
+    itens.push({ para: '/admin/unidades', rotulo: 'Unidades', grupo: 'Cadastros', icone: <IcUnidades /> })
+    itens.push({ para: '/admin/saldo-inicial', rotulo: 'Saldo inicial', grupo: 'Cadastros', icone: <IcSaldoInicial /> })
   }
   return itens
 }
@@ -75,6 +93,7 @@ function ItemDoMenu({ item, contagem }: { item: ItemMenu; contagem: number | nul
   return (
     <>
       <NavLink to={item.para} end={item.para === '/' || item.para === '/movimentar'} aria-describedby={contagem ? id : undefined}>
+        {item.icone}
         {item.rotulo}
         {!!contagem && (
           <span className={alerta ? 'menu-contagem alerta' : 'menu-contagem'} aria-hidden="true">
@@ -123,19 +142,18 @@ export function Layout() {
     <div className="app">
       <aside className="menu-lateral">
         <Link to="/" className="marca-link">
-          <Marca />
+          <Marca comNome />
         </Link>
         <BuscaComando onClick={() => setBuscaAberta(true)} />
         <nav aria-label="Menu principal">
           {grupos.map((g) => (
-            <div key={g} className="menu-secao">
-              <div className="menu-grupo">{g}</div>
+            <MenuGrupo key={g} titulo={g}>
               {itens
                 .filter((i) => i.grupo === g)
                 .map((i) => (
                   <ItemDoMenu key={i.para} item={i} contagem={contagens[i.para]} />
                 ))}
-            </div>
+            </MenuGrupo>
           ))}
         </nav>
         <div className="menu-rodape">
@@ -144,7 +162,6 @@ export function Layout() {
           <button type="button" onClick={() => void sair()}>
             Sair
           </button>
-          <div className="produto">Gestão de almoxarifado</div>
         </div>
       </aside>
 
