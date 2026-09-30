@@ -86,6 +86,8 @@ select rpc_criar_remessa_avulsa('transferencia', tests.a('MNT'), tests.a('ITB'),
 -- Saídas: 4 parafusos e 1 conector; ajuste de inventário: conta 15 parafusos (saldo 10+18−3−1−4 = 20 → −5)
 select rpc_registrar_saida(tests.a('MNT'),
   '[{"material_id":"10000000-0000-4000-a000-0000000000b1","quantidade":4},{"material_id":"10000000-0000-4000-a000-0000000000b2","quantidade":1}]');
+reset role;
+select tests.como('00000000-0000-4000-a000-0000000000a3');
 select rpc_registrar_ajuste(tests.a('MNT'), 'inventario', 'Contagem',
   '[{"material_id":"10000000-0000-4000-a000-0000000000b1","qtd_contada":15}]');
 reset role;

@@ -463,12 +463,19 @@ select tests.como('VICTOR');
 select throws_like(
   $$ select rpc_tratar_divergencia(tests.item('rem4', 'CONEC'), 'ajuste_origem', 1, 'Mandei a mais') $$,
   'Saldo insuficiente em Itabirinha%', 'ajuste na origem respeita o saldo');
+select throws_ok(
+  $$ select rpc_registrar_ajuste(tests.a('ITB'), 'inventario', 'Conector sem registro no sistema', tests.j('[{"material_id":"CONEC","qtd_contada":1}]')) $$,
+  '42501', null, 'supervisor não ajusta o estoque da própria base');
+reset role;
+select tests.como('C211');
 select throws_like(
   $$ select rpc_registrar_ajuste(tests.a('ITB'), 'inventario', ' ', tests.j('[{"material_id":"CONEC","qtd_contada":1}]')) $$,
   'Informe a justificativa%', 'ajuste de inventário exige justificativa');
 select lives_ok(
   $$ select rpc_registrar_ajuste(tests.a('ITB'), 'inventario', 'Conector sem registro no sistema', tests.j('[{"material_id":"CONEC","qtd_contada":1}]')) $$,
-  'responsável ajusta o inventário da base');
+  'gestão do 211 ajusta o estoque da base');
+reset role;
+select tests.como('VICTOR');
 select lives_ok(
   $$ select rpc_tratar_divergencia(tests.item('rem4', 'CONEC'), 'ajuste_origem', 1, 'Mandei a mais sem registrar') $$,
   'ajuste na origem fecha a sobra');
@@ -480,11 +487,11 @@ select is(tests.saldo('211', 'CONEC'), 7.000, '211: 10 − 3 enviados − 1 avar
 -- ---------------------------------------------------------------------
 -- G. Ajuste de inventário
 -- ---------------------------------------------------------------------
-select tests.como('VICTOR');
+select tests.como('C211');
 select lives_ok(
   $$ with a as (select rpc_registrar_ajuste(tests.a('MNT'), 'inventario', 'Contagem mensal', tests.j('[{"material_id":"PARAF","qtd_contada":12}]')) as id)
      insert into tests.ctx select 'aju1', id from a $$,
-  'ajuste de inventário em Mantena');
+  'gestão do 211 ajusta o inventário de Mantena');
 select is((select diferenca from ajuste_itens where ajuste_id = tests.id('aju1')), 2.000, 'diferença calculada contra o saldo (10 → 12)');
 reset role;
 select is(tests.saldo('MNT', 'PARAF'), 12.000, 'saldo passa a ser o contado');

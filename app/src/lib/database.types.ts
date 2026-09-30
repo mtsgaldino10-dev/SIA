@@ -960,16 +960,19 @@ export type Database = {
           aceita_fracao: boolean
           codigo: string
           descricao: string | null
+          sigla_sap: string | null
         }
         Insert: {
           aceita_fracao?: boolean
           codigo: string
           descricao?: string | null
+          sigla_sap?: string | null
         }
         Update: {
           aceita_fracao?: boolean
           codigo?: string
           descricao?: string | null
+          sigla_sap?: string | null
         }
         Relationships: []
       }
@@ -1262,7 +1265,9 @@ export type Database = {
       }
       fn_eh_admin: { Args: never; Returns: boolean }
       fn_eh_gestao: { Args: never; Returns: boolean }
+      fn_eh_gestora: { Args: never; Returns: boolean }
       fn_eh_responsavel: { Args: { p_almox_id: string }; Returns: boolean }
+      fn_gere_local: { Args: { p_almox_id: string }; Returns: boolean }
       fn_hoje: { Args: never; Returns: string }
       fn_indicadores: {
         Args: { p_ate: string; p_de: string }

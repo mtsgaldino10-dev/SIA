@@ -80,7 +80,10 @@ select is(rpc_criar_remessa_avulsa('transferencia', tests.a('MNT'), tests.a('ITB
   'repetir a transferência devolve a mesma remessa');
 select is((select count(*) from remessas where tipo = 'transferencia')::int, 1, 'uma remessa só');
 select is(tests.saldo('MNT', '10000000-0000-4000-a000-0000000000d1'), 22.000, 'envio baixou uma vez só');
+reset role;
 
+-- O ajuste é da gestão do 211
+select tests.como('00000000-0000-4000-a000-0000000000c3');
 select is(rpc_registrar_ajuste(tests.a('MNT'), 'inventario', 'Contagem',
   '[{"material_id":"10000000-0000-4000-a000-0000000000d1","qtd_contada":20}]', null, tests.id('aju')), tests.id('aju'),
   'ajuste usa o id gerado pelo app');
