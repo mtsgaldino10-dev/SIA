@@ -14,8 +14,17 @@ import { SeletorAlmox } from '../Saldo'
 function useSaldos(almoxId: string, versao = 0) {
   const [saldos, setSaldos] = useState<Map<string, number> | null>(null)
   useEffect(() => {
+    // Trocar de almoxarifado com a consulta anterior ainda em andamento não
+    // pode deixar a resposta antiga sobrescrever a nova.
+    let vigente = true
     setSaldos(null)
-    if (almoxId) void saldosDe(almoxId).then(setSaldos).catch(() => setSaldos(new Map()))
+    if (almoxId)
+      void saldosDe(almoxId)
+        .then((s) => vigente && setSaldos(s))
+        .catch(() => vigente && setSaldos(new Map()))
+    return () => {
+      vigente = false
+    }
   }, [almoxId, versao])
   return saldos
 }
@@ -32,7 +41,7 @@ export function Movimentar() {
   ]
   return (
     <div className="pilha">
-      <PaginaTopo titulo="Movimentar" />
+      <PaginaTopo titulo="Movimentar" trilha={['Operação', 'Movimentar']} />
       <div className="grade-cartoes">
         {opcoes
           .filter((o) => o.mostrar)
@@ -96,7 +105,11 @@ export function Saida() {
 
   return (
     <div className="pilha">
-      <PaginaTopo titulo="Registrar saída" voltar={{ para: '/movimentar', rotulo: 'Movimentar' }} />
+      <PaginaTopo
+        titulo="Registrar saída"
+        voltar={{ para: '/movimentar', rotulo: 'Movimentar' }}
+        trilha={[{ rotulo: 'Movimentar', para: '/movimentar' }, 'Registrar saída']}
+      />
       <div className="cartao pilha">
         <div className="grade-2">
           <SeletorAlmox valor={almoxId} onChange={setAlmoxId} opcoes={almoxResponsavel} />
@@ -192,6 +205,7 @@ export function RemessaAvulsa({ tipo }: { tipo: 'transferencia' | 'devolucao' })
             : 'O material sai da base e só entra no 211 depois da conferência.'
         }
         voltar={{ para: '/movimentar', rotulo: 'Movimentar' }}
+        trilha={[{ rotulo: 'Movimentar', para: '/movimentar' }, titulo]}
       />
       <div className="cartao pilha">
         <div className="grade-2">
@@ -284,6 +298,7 @@ export function Ajuste() {
         titulo="Ajuste de inventário"
         sub="Conte o material e informe a quantidade. O sistema calcula a diferença contra o saldo e lança o ajuste."
         voltar={{ para: '/movimentar', rotulo: 'Movimentar' }}
+        trilha={[{ rotulo: 'Movimentar', para: '/movimentar' }, 'Ajuste de inventário']}
       />
       <div className="cartao pilha">
         <div className="grade-2">

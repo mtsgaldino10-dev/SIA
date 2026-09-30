@@ -8,13 +8,29 @@ import { supabase } from '../lib/supabase'
 import { listaOuErro, useConsulta } from '../lib/useConsulta'
 import { SeletorAlmox } from './Saldo'
 
+type LinhaDocumento = {
+  saida_id: string | null
+  ajuste_id: string | null
+  remessas: { numero: number } | null
+  saidas: { numero: number } | null
+  ajustes: { numero: number } | null
+}
+
+/** Número do documento da movimentação, para o filtro (REM, SAI ou AJU). */
+function documentoDe(m: LinhaDocumento): string {
+  if (m.remessas) return formatarDoc('REM', m.remessas.numero)
+  if (m.saida_id && m.saidas) return formatarDoc('SAI', m.saidas.numero)
+  if (m.ajuste_id && m.ajustes) return formatarDoc('AJU', m.ajustes.numero)
+  return ''
+}
+
 /** Livro-razão: toda movimentação de um almoxarifado, mais recente primeiro. */
 export function Historico() {
   const { almoxVisiveis, almoxResponsavel } = useSessao()
   const nomes = useNomes()
   const [params, setParams] = useSearchParams()
   const almoxId = params.get('almox') ?? almoxResponsavel[0]?.id ?? almoxVisiveis[0]?.id ?? ''
-  const [termo, setTermo] = useState('')
+  const [termo, setTermo] = useState(params.get('busca') ?? '')
 
   const consulta = useConsulta(
     () =>
@@ -33,16 +49,20 @@ export function Historico() {
 
   const t = termo.trim().toLowerCase()
   const linhas = (consulta.dados ?? []).filter(
-    (m) => !t || m.materiais?.codigo_sap.includes(t) || m.materiais?.descricao.toLowerCase().includes(t),
+    (m) =>
+      !t ||
+      m.materiais?.codigo_sap.includes(t) ||
+      m.materiais?.descricao.toLowerCase().includes(t) ||
+      documentoDe(m).toLowerCase().includes(t),
   )
 
   return (
     <div className="pilha">
-      <PaginaTopo titulo="Histórico" sub="Todas as movimentações que formam o saldo. Nada aqui é editado ou apagado." />
+      <PaginaTopo titulo="Histórico" trilha={['Operação', 'Histórico']} sub="Todas as movimentações que formam o saldo. Nada aqui é editado ou apagado." />
       <div className="grade-2">
         <SeletorAlmox valor={almoxId} onChange={(id) => setParams({ almox: id })} opcoes={almoxVisiveis} />
-        <Campo rotulo="Filtrar material">
-          <input type="search" placeholder="Código SAP ou descrição" value={termo} onChange={(e) => setTermo(e.target.value)} />
+        <Campo rotulo="Filtrar material ou documento">
+          <input type="search" placeholder="Código SAP, descrição ou SAI-000012" value={termo} onChange={(e) => setTermo(e.target.value)} />
         </Campo>
       </div>
       <Aviso tipo="erro">{consulta.erro}</Aviso>

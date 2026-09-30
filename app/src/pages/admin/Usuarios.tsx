@@ -42,6 +42,7 @@ export function AdminUsuarios() {
     <div className="pilha">
       <PaginaTopo
         titulo="Usuários e atribuições"
+        trilha={['Cadastros', 'Usuários e atribuições']}
         sub="Crie o usuário no painel do Supabase (Authentication → Add user). O perfil aparece aqui automaticamente."
       />
       <Aviso tipo="erro">{erro}</Aviso>
@@ -222,7 +223,7 @@ function NovaAtribuicao({
   const [funcao, setFuncao] = useState<'ambas' | Enum<'funcao_atribuicao'>>('ambas')
 
   return (
-    <div className="pilha" style={{ borderTop: '1px solid var(--borda)', paddingTop: 12 }}>
+    <div className="pilha separada">
       <h3>Adicionar</h3>
       <div className="grade-cartoes">
         {almox.map((a) => (

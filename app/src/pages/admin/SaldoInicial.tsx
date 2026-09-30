@@ -68,6 +68,7 @@ export function SaldoInicial() {
     <div className="pilha">
       <PaginaTopo
         titulo="Saldo inicial"
+        trilha={['Cadastros', 'Saldo inicial']}
         sub="Uma planilha por almoxarifado, com as colunas codigo_sap e quantidade. Material inexistente bloqueia a importação."
         acoes={
           <button

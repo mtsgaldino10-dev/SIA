@@ -1,8 +1,8 @@
-# SIA — Sistema Integrado de Almoxarifado
+# Warefly — Gestão de almoxarifado
 
 Controle do almoxarifado regional **211** e das **11 bases**, em paralelo ao SAP e sem integração com ele. Registra o que cada base pediu, o que foi enviado e o que de fato chegou.
 
-O plano completo está em [SIA_PLANO_IMPLEMENTAÇÃO.MD](SIA_PLANO_IMPLEMENTAÇÃO.MD).
+O sistema se chamava **SIA** (Sistema Integrado de Almoxarifado) até 30/09/2026. O repositório, a pasta do projeto, o projeto Supabase e o plano mantêm o nome antigo. O plano completo está em [SIA_PLANO_IMPLEMENTAÇÃO.MD](SIA_PLANO_IMPLEMENTAÇÃO.MD).
 
 ## Estrutura
 
@@ -12,6 +12,8 @@ O plano completo está em [SIA_PLANO_IMPLEMENTAÇÃO.MD](SIA_PLANO_IMPLEMENTAÇ�
 | `supabase/tests/database` | Testes pgTAP que simulam cada papel (192 verificações) |
 | `app/` | App React + Vite + TypeScript (fases 2 a 5) |
 | `app/e2e` | Testes ponta a ponta (Playwright) contra o Supabase local |
+| `design-system/` | Design system Warefly: tokens (usados pelo app), fontes, componentes de referência, UI kits e lint de aderência ([README](design-system/README.md)) |
+| `design-system/referencia` | Páginas HTML de referência visual, para abrir no navegador |
 
 ## Pré-requisitos
 
@@ -44,6 +46,7 @@ supabase test db               # pgTAP no banco local (192 verificações)
 cd app
 npm test                       # testes unitários (Vitest)
 npx tsc -b                     # checagem de tipos
+npm run lint                   # oxlint + regras de aderência ao design system (só avisos)
 npx playwright test            # E2E: ZERA o banco local e percorre todos os fluxos
 ```
 
@@ -52,6 +55,17 @@ Para rodar o pgTAP no projeto remoto, sem alterar dados (tudo roda em transaçã
 ```powershell
 supabase test db --db-url "postgresql://postgres.<ref>:<senha>@aws-0-sa-east-1.pooler.supabase.com:5432/postgres"
 ```
+
+## Design system
+
+A identidade visual do app vem de `design-system/`:
+
+- `app/src/index.css` importa os tokens de `design-system/tokens` (cores, tipografia, espaçamento). Para mudar uma cor, mude o token lá; não copie valores para o app. Por isso o build do app precisa da pasta `design-system` ao lado de `app/`: na Vercel, mantenha ligada a opção que inclui arquivos fora do Root Directory (vem ligada por padrão).
+- Os componentes do app (`app/src/components`) seguem a API e o visual dos componentes de referência: marca, etiquetas com mini-gráfico, gráficos do painel, breadcrumb, busca ⌘K, menus de cartão.
+- As páginas de `design-system/referencia/` abrem com duplo clique (precisam de internet para o React e o Babel do unpkg).
+- `npm run lint` aplica as regras de aderência de `design-system/lint/` ao código do app, como avisos: cor ou px soltos em string e props fora da API dos componentes. Hoje não há nenhum.
+
+Detalhes, triagem do export e pendências em [design-system/README.md](design-system/README.md).
 
 ## Aplicar migrations no projeto remoto
 

@@ -71,6 +71,7 @@ export function AdminMateriais() {
     <div className="pilha">
       <PaginaTopo
         titulo="Materiais"
+        trilha={['Cadastros', 'Materiais']}
         sub={`${materiais.length} materiais no catálogo. O código SAP é a chave e não se repete.`}
         acoes={
           <>
@@ -226,6 +227,7 @@ export function AdminUnidades() {
     <div className="pilha">
       <PaginaTopo
         titulo="Unidades"
+        trilha={['Cadastros', 'Unidades']}
         sub="Lista fechada. Unidade sem fração exige quantidade inteira. A importação não cria unidade: cadastre aqui antes."
       />
       <Aviso tipo="erro">{erro}</Aviso>

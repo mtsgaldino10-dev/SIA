@@ -92,6 +92,7 @@ function Form({
         titulo={pedido ? `Recebimento do ${formatarDoc('PED', pedido.numero)}` : 'Entrada avulsa'}
         sub={pedido ? 'Material do pedido externo chegando do 3256.' : 'Material que chegou do 3256 sem pedido no sistema.'}
         voltar={{ para: '/entradas', rotulo: 'Entradas do 3256' }}
+        trilha={[{ rotulo: 'Entradas do 3256', para: '/entradas' }, pedido ? formatarDoc('PED', pedido.numero) : 'Entrada avulsa']}
       />
       <div className="cartao pilha">
         <h2>Documento</h2>

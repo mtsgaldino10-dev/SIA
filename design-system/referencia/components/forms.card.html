@@ -1,0 +1,17 @@
+<!-- @dsCard group="Components" viewport="700x400" name="Forms" -->
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../_ds_bundle.js"></script>
+<style>body{padding:20px}.g{display:flex;flex-direction:column;gap:14px}.r{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.l{font:400 .72rem var(--fonte-mono);color:var(--texto-2);width:90px;flex:none}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.SIADesignSystem_ad870b;
+
+function Demo(){ const { Botao, Campo, Entrada, Selecao, Abas, MaterialBusca } = NS; const [a,setA]=React.useState('fila'); return <div className="g">
+<div className="r"><Botao>Enviar pedido</Botao><Botao variante="secundario">Salvar itens</Botao><Botao variante="perigo">Cancelar pedido</Botao><Botao variante="fantasma">Ver saldo</Botao><Botao tamanho="peq" variante="secundario">Tratar</Botao><Botao disabled>Registrar envio</Botao></div>
+<Abas abas={[{id:'fila',rotulo:'Fila do 211',contagem:4},{id:'abertos',rotulo:'Abertos'},{id:'todos',rotulo:'Todos'}]} ativa={a} onChange={setA}/>
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr 140px',gap:12}}><Campo rotulo="Quem contou" ajuda="Não precisa ter login."><Entrada value="Carlos Lima"/></Campo><Campo rotulo="Almoxarifado"><Selecao value="211" opcoes={[{valor:'211',rotulo:'211 · Almoxarifado regional'}]}/></Campo><Campo rotulo="Enviada" erro="Acima do saldo."><Entrada num value="120" invalido/></Campo></div>
+<div style={{height:150}}><MaterialBusca aberta materiais={[{codigo_sap:'10004521',descricao:'Cabo de cobre 16mm²',unidade:'M'},{codigo_sap:'10017388',descricao:'Conector cunha',unidade:'UN'}]}/></div></div>; }
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

@@ -1,0 +1,17 @@
+<!-- @dsCard group="Components" viewport="700x420" name="Data" -->
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../_ds_bundle.js"></script>
+<style>body{padding:20px}.g{display:flex;flex-direction:column;gap:14px}.r{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.l{font:400 .72rem var(--fonte-mono);color:var(--texto-2);width:90px;flex:none}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.SIADesignSystem_ad870b;
+
+function Demo(){ const { Etiqueta, Tabela, ItemLista, Doc, Qtd, Dados, StatusBadge } = NS; return <div className="g">
+<div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:10}}><Etiqueta valor={12} legenda="Pedidos na fila" tom="info" serie={[6,8,7,10,12]} onClick={()=>{}}/><Etiqueta valor={7} legenda="Remessas em trânsito" tom="transito" serie={[9,8,8,6,7]}/><Etiqueta valor={3} legenda="Divergências abertas" tom="alerta" serie={[1,2,2,4,3]}/></div>
+<div style={{display:'grid',gridTemplateColumns:'1.4fr 1fr',gap:10,alignItems:'start'}}>
+<Tabela colunas={[{chave:'c',rotulo:'Código',mono:true},{chave:'d',rotulo:'Descrição'},{chave:'s',rotulo:'Saldo',num:true,render:l=><Qtd valor={l.s} unidade={l.u}/>}]} linhas={[{id:1,c:'10004521',d:'Cabo de cobre 16mm²',s:1250.5,u:'M'},{id:2,c:'10017388',d:'Conector cunha',s:84,u:'UN'},{id:3,c:'10022010',d:'Fita isolante 19mm',s:0,u:'PC'}]} onLinha={()=>{}}/>
+<div className="g" style={{gap:8}}><ItemLista titulo={<strong><Doc prefixo="PED" numero={1042}/></strong>} direita={<StatusBadge status="solicitado"/>} sub="Base Contagem → 211" subDireita="6 itens · 29/09 08:14" onClick={()=>{}}/><Dados itens={[['Criado','29/09/2026 08:14 por Ana Souza'],['Aprovado','29/09/2026 10:02']]}/></div></div></div>; }
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

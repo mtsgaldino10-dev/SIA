@@ -1,0 +1,49 @@
+/* Warefly — azul céu, marinho, cinza, névoa. Layout claro das imagens de referência. */
+:root {
+  /* Base */
+  --cor-marca: #1e66c9;      /* azul voo: ação, marca, dado em destaque */
+  --cor-asa: #5b9cf0;        /* azul claro: segunda pena do símbolo, realces */
+  --cor-estrutura: #0b2447;  /* marinho: títulos, logotipo */
+  --cor-neutra: #74808f;     /* cinza: bordas, texto secundário */
+  --cor-fundo: #f3f6fa;      /* névoa: fundo */
+  --cor-dado-2: #a9c3e8;     /* série secundária de gráfico */
+  --cor-dado-3: #dce6f4;     /* série terciária de gráfico */
+
+  /* Status (sempre com texto no badge) */
+  --st-info: #0e8aa8; --st-info-fundo: #dff3f7; --st-info-texto: #0a6780;
+  --st-transito: #d49a1c; --st-transito-fundo: #fbf0d9; --st-transito-texto: #8a6310;
+  --st-ok: #2f9e62; --st-ok-fundo: #e1f5e9; --st-ok-texto: #1d7446;
+  --st-alerta: #b3263e; --st-alerta-fundo: #f7e0e4; --st-alerta-texto: #8e1d31;
+  --st-neutro: #76838a; --st-neutro-fundo: #eceff0; --st-neutro-texto: #4b575d;
+
+  /* Derivados */
+  --superficie: #ffffff;
+  --borda: color-mix(in srgb, var(--cor-neutra) 20%, transparent);
+  --borda-forte: color-mix(in srgb, var(--cor-neutra) 35%, transparent);
+  --texto: #1a2433;
+  --texto-2: var(--cor-neutra);
+  --marca-hover: color-mix(in srgb, var(--cor-marca) 85%, black);
+  --marca-suave: color-mix(in srgb, var(--cor-marca) 12%, transparent);
+  --menu-fundo: #f8fafc;
+  --menu-texto: var(--cor-estrutura);
+  --menu-texto-ativo: var(--cor-estrutura);
+  --menu-grupo: var(--cor-neutra);
+  --menu-hover: color-mix(in srgb, var(--cor-neutra) 8%, transparent);
+  --menu-ativo: #ffffff;
+  --menu-divisor: var(--borda);
+  --cabecalho-tabela: var(--cor-fundo);
+  --sombra-cartao: 0 1px 2px rgba(11,36,71,.06);
+  --veu: color-mix(in srgb, var(--cor-estrutura) 55%, transparent);
+
+  /* Aliases semânticos */
+  --superficie-pagina: var(--cor-fundo);
+  --superficie-cartao: var(--superficie);
+  --superficie-menu: var(--menu-fundo);
+  --texto-titulo: var(--cor-estrutura);
+  --texto-corpo: var(--texto);
+  --texto-secundario: var(--texto-2);
+  --acao: var(--cor-marca);
+  --acao-hover: var(--marca-hover);
+  --acao-texto: #ffffff;
+  --foco: var(--cor-marca);
+}

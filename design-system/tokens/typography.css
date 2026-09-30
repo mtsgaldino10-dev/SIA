@@ -1,0 +1,24 @@
+:root {
+  --fonte: 'Barlow', system-ui, sans-serif; /* @kind font */
+  --fonte-mono: 'IBM Plex Mono', ui-monospace, monospace; /* @kind font */
+
+  --tam-h1: 1.5rem;     /* 24px, 600 */
+  --tam-h2: 1.15rem;    /* 18.4px, 600 */
+  --tam-h3: 1rem;       /* 16px, 600 */
+  --tam-corpo: 1rem;    /* 16px, lh 1.45 */
+  --tam-botao: 0.95rem;
+  --tam-tabela: 0.92rem;
+  --tam-peq: 0.875rem;
+  --tam-legenda: 0.85rem;
+  --tam-badge: 0.78rem;
+  --tam-th: 0.78rem;    /* caixa-alta, 0.04em */
+  --tam-grupo-menu: 0.7rem; /* caixa-alta, 0.08em */
+  --tam-etiqueta: 1.9rem;   /* mono 400, lh 1.1 */
+  --tam-sigla: 1.35rem;     /* 600, 0.06em */
+
+  --peso-regular: 400; /* @kind font */
+  --peso-medio: 500; /* @kind font */
+  --peso-forte: 600; /* @kind font */
+  --altura-linha: 1.45; /* @kind font */
+  --altura-titulo: 1.2; /* @kind font */
+}

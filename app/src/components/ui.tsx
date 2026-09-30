@@ -1,18 +1,24 @@
 import { cloneElement, isValidElement, useId, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { formatarDoc, formatarQtd, rotuloStatus, tomStatus } from '../lib/formato'
+import { formatarDoc, formatarQtd, rotuloStatus, tomStatus, type Tom } from '../lib/formato'
+import { Sparkline } from './graficos'
 
-/** Símbolo: tronco que se divide em três ramos (o 211 distribuindo para as bases). */
-export function Simbolo({ tamanho = 26 }: { tamanho?: number }) {
+/** Símbolo Warefly: asa de três penas em arco ascendente. */
+export function Simbolo({
+  tamanho = 26,
+  cor = 'var(--cor-marca)',
+  cor2 = 'var(--cor-asa)',
+}: {
+  tamanho?: number
+  cor?: string
+  cor2?: string
+}) {
   return (
     <svg width={tamanho} height={tamanho} viewBox="0 0 32 32" aria-hidden="true">
-      <g stroke="var(--cor-marca)" strokeWidth="2.6" strokeLinecap="round" fill="none">
-        <path d="M16 29V16M16 16L8 8.5M16 16V6.5M16 16l8-7.5" />
-      </g>
-      <g fill="var(--cor-marca)">
-        <circle cx="8" cy="7.5" r="2.8" />
-        <circle cx="16" cy="5" r="2.8" />
-        <circle cx="24" cy="7.5" r="2.8" />
+      <g fill="none" strokeLinecap="round" strokeWidth="3.4">
+        <path d="M4 21.5Q15 20 27.5 5" stroke={cor} />
+        <path d="M6.5 25.5Q16 25 24 15" stroke={cor2} />
+        <path d="M9.5 29Q16.5 29 20.5 23.5" stroke={cor2} opacity="0.6" />
       </g>
     </svg>
   )
@@ -23,15 +29,16 @@ export function Marca({ comNome = false }: { comNome?: boolean }) {
     <span className="marca">
       <Simbolo />
       <span>
-        <span className="marca-sigla">SIA</span>
-        {comNome && <span className="marca-nome" style={{ display: 'block' }}>Sistema Integrado de Almoxarifado</span>}
+        <span className="marca-sigla">Warefly</span>
+        {comNome && <span className="marca-nome">Gestão de almoxarifado</span>}
       </span>
     </span>
   )
 }
 
-export function StatusBadge({ status }: { status: string }) {
-  return <span className={`badge ${tomStatus(status)}`}>{rotuloStatus(status)}</span>
+/** Badge de status: sempre com texto. `tom` força a cor; `children` troca o texto. */
+export function StatusBadge({ status, tom, children }: { status?: string; tom?: Tom; children?: ReactNode }) {
+  return <span className={`badge ${tom ?? tomStatus(status ?? '')}`}>{children ?? rotuloStatus(status)}</span>
 }
 
 export function Doc({ prefixo, numero }: { prefixo: 'PED' | 'REM' | 'SAI' | 'AJU'; numero: number }) {
@@ -47,21 +54,50 @@ export function Qtd({ valor, unidade }: { valor: number | string | null | undefi
   )
 }
 
+export type ItemTrilha = string | { rotulo: string; para: string }
+
+/** Trilha de navegação (desktop). O último item é a página atual. */
+export function Breadcrumb({ itens }: { itens: ItemTrilha[] }) {
+  return (
+    <nav className="trilha" aria-label="Trilha">
+      <ol>
+        {itens.map((item, i) => (
+          <li key={i}>
+            {i > 0 && <span aria-hidden="true">/</span>}
+            {typeof item === 'string' ? (
+              <span aria-current={i === itens.length - 1 ? 'page' : undefined}>{item}</span>
+            ) : (
+              <Link to={item.para}>{item.rotulo}</Link>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
+/**
+ * Cabeçalho de página. Com `trilha`, o desktop mostra o breadcrumb e o link
+ * "← voltar" fica só no celular.
+ */
 export function PaginaTopo({
   titulo,
   sub,
   voltar,
+  trilha,
   acoes,
 }: {
   titulo: ReactNode
   sub?: ReactNode
   voltar?: { para: string; rotulo: string }
+  trilha?: ItemTrilha[]
   acoes?: ReactNode
 }) {
   return (
     <>
+      {trilha && <Breadcrumb itens={trilha} />}
       {voltar && (
-        <Link className="voltar" to={voltar.para}>
+        <Link className={trilha ? 'voltar so-movel' : 'voltar'} to={voltar.para}>
           ← {voltar.rotulo}
         </Link>
       )}
@@ -73,6 +109,40 @@ export function PaginaTopo({
         {acoes && <div className="linha">{acoes}</div>}
       </div>
     </>
+  )
+}
+
+/** Cartão com título, subtítulo opcional e ações no cabeçalho (período, menu "…", botões). */
+export function Regiao({
+  titulo,
+  sub,
+  acoes,
+  fita = false,
+  nivel = 2,
+  children,
+}: {
+  titulo: ReactNode
+  sub?: ReactNode
+  acoes?: ReactNode
+  /** Faixa âmbar de atenção sob o cabeçalho. */
+  fita?: boolean
+  nivel?: 2 | 3
+  children: ReactNode
+}) {
+  const id = useId()
+  const Titulo = nivel === 2 ? 'h2' : 'h3'
+  return (
+    <section className="cartao pilha" aria-labelledby={id}>
+      <div className="cartao-cab">
+        <div className="cartao-titulo">
+          <Titulo id={id}>{titulo}</Titulo>
+          {sub && <p className="sec peq">{sub}</p>}
+        </div>
+        {acoes && <div className="cartao-acoes">{acoes}</div>}
+      </div>
+      {fita && <div className="fita" aria-hidden="true" />}
+      {children}
+    </section>
   )
 }
 
@@ -131,28 +201,50 @@ export function Vazio({ children }: { children: ReactNode }) {
   return <div className="vazio">{children}</div>
 }
 
+const COR_TOM = { alerta: 'var(--st-alerta)', transito: 'var(--st-transito)', ok: 'var(--st-ok)', info: 'var(--st-info)' }
+
+/** Indicador: legenda com ponto do tom, número grande e mini-gráfico opcional. */
 export function Etiqueta({
   valor,
   legenda,
   tom,
-  para,
+  compacta = false,
+  serie,
+  href,
+  onClick,
 }: {
   valor: ReactNode
   legenda: ReactNode
   tom?: 'alerta' | 'transito' | 'ok' | 'info'
-  para?: string
+  /** Versão menor, para a grade 2×2 das bases. */
+  compacta?: boolean
+  /** Série do mini-gráfico à direita. */
+  serie?: number[]
+  /** Rota do app aberta ao clicar. */
+  href?: string
+  onClick?: () => void
 }) {
+  const classe = ['etiqueta', tom, compacta && 'compacta'].filter(Boolean).join(' ')
   const conteudo = (
     <>
-      <div className="valor">{valor}</div>
-      <div className="legenda">{legenda}</div>
+      <div className="etiqueta-texto">
+        <div className="legenda">{legenda}</div>
+        <div className="valor">{valor}</div>
+      </div>
+      {serie && <Sparkline valores={serie} cor={tom ? COR_TOM[tom] : undefined} />}
     </>
   )
-  return para ? (
-    <Link className={`etiqueta ${tom ?? ''}`} to={para}>
-      {conteudo}
-    </Link>
-  ) : (
-    <div className={`etiqueta ${tom ?? ''}`}>{conteudo}</div>
-  )
+  if (href)
+    return (
+      <Link className={classe} to={href}>
+        {conteudo}
+      </Link>
+    )
+  if (onClick)
+    return (
+      <button type="button" className={classe} onClick={onClick}>
+        {conteudo}
+      </button>
+    )
+  return <div className={classe}>{conteudo}</div>
 }

@@ -56,6 +56,7 @@ export function RemessaDetalhe() {
         }
         sub={`${rotuloStatus(r.tipo)} · ${almox(r.origem_id)?.nome} → ${almox(r.destino_id)?.nome}`}
         voltar={{ para: '/remessas', rotulo: 'Remessas' }}
+        trilha={[{ rotulo: 'Remessas', para: '/remessas' }, formatarDoc('REM', r.numero)]}
         acoes={
           <>
             {r.tipo !== 'externa' && (

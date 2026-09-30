@@ -45,6 +45,7 @@ export function Entradas() {
     <div className="pilha">
       <PaginaTopo
         titulo="Entradas do 3256"
+        trilha={['Operação', 'Entradas do 3256']}
         sub="O 3256 não opera o sistema. O 211 registra o pedido e, na chegada, a quantidade do documento SAP e a contada."
         acoes={
           <>

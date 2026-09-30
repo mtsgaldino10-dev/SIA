@@ -44,7 +44,7 @@ export function Guia() {
         <div className="linha" style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <Marca />
-            <div style={{ fontSize: '9pt' }}>Sistema Integrado de Almoxarifado</div>
+            <div style={{ fontSize: '9pt' }}>Gestão de almoxarifado</div>
           </div>
           <div style={{ textAlign: 'right' }}>
             <h1 style={{ fontSize: '16pt' }}>Guia de remessa {formatarDoc('REM', r.numero)}</h1>

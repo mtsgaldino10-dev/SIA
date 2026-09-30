@@ -77,6 +77,11 @@ function FormRecebimento({
         titulo={`Receber ${formatarDoc('REM', remessa.numero)}`}
         sub={`${almox(remessa.origem_id)?.nome} → ${almox(remessa.destino_id)?.nome} · enviada em ${formatarData(remessa.data_envio)}`}
         voltar={{ para: `/remessas/${remessa.id}`, rotulo: 'Remessa' }}
+        trilha={[
+          { rotulo: 'Remessas', para: '/remessas' },
+          { rotulo: formatarDoc('REM', remessa.numero), para: `/remessas/${remessa.id}` },
+          'Receber',
+        ]}
       />
       <Aviso tipo="info">
         Lance o que foi contado na guia assinada. Item avariado não entra no saldo: conte só o que chegou em condições de uso.

@@ -1,0 +1,46 @@
+window.SIA_DADOS = {
+  bases: [
+    { id: '211', codigo: '211', nome: 'Almoxarifado regional' },
+    { id: 'B03', codigo: 'B03', nome: 'Base Contagem' },
+    { id: 'B05', codigo: 'B05', nome: 'Base Betim' },
+    { id: 'B07', codigo: 'B07', nome: 'Base Sete Lagoas' },
+    { id: 'B09', codigo: 'B09', nome: 'Base Divinópolis' },
+  ],
+  materiais: [
+    { codigo_sap: '10004521', descricao: 'Cabo de cobre nu 16mm²', unidade: 'M', saldo: 1250.5, ult: '28/09/2026' },
+    { codigo_sap: '10017388', descricao: 'Conector cunha estribo', unidade: 'UN', saldo: 84, ult: '27/09/2026' },
+    { codigo_sap: '10022010', descricao: 'Fita isolante 19mm x 20m', unidade: 'RL', saldo: 36, ult: '26/09/2026' },
+    { codigo_sap: '10031877', descricao: 'Luva de vaqueta', unidade: 'PR', saldo: 52, ult: '25/09/2026' },
+    { codigo_sap: '10040112', descricao: 'Isolador pino polimérico 15kV', unidade: 'UN', saldo: 140, ult: '29/09/2026' },
+    { codigo_sap: '10055630', descricao: 'Parafuso cabeça abaulada M16x150', unidade: 'CJ', saldo: 310, ult: '22/09/2026' },
+    { codigo_sap: '10061204', descricao: 'Chave fusível 15kV 100A', unidade: 'PC', saldo: 9, ult: '19/09/2026' },
+    { codigo_sap: '10070991', descricao: 'Brita nº 1', unidade: 'M3', saldo: 4.5, ult: '18/09/2026' },
+  ],
+  pedidos: [
+    { numero: 1042, status: 'aprovado', de: 'Base Contagem', para: '211', itens: 4, quando: '29/09/2026 08:14' },
+    { numero: 1041, status: 'solicitado', de: 'Base Betim', para: '211', itens: 7, quando: '29/09/2026 07:52' },
+    { numero: 1039, status: 'solicitado', de: 'Base Sete Lagoas', para: '211', itens: 2, quando: '28/09/2026 16:30' },
+    { numero: 1036, status: 'em_transito', de: 'Base Divinópolis', para: '211', itens: 5, quando: '27/09/2026 10:05' },
+    { numero: 1031, status: 'com_divergencia', de: 'Base Betim', para: '211', itens: 3, quando: '25/09/2026 09:41' },
+    { numero: 1028, status: 'encerrado', de: 'Base Contagem', para: '211', itens: 6, quando: '24/09/2026 14:12' },
+    { numero: 1044, status: 'rascunho', de: 'Base Contagem', para: '211', itens: 1, quando: '29/09/2026 09:03' },
+  ],
+  itensPedido: [
+    { codigo_sap: '10004521', descricao: 'Cabo de cobre nu 16mm²', unidade: 'M', aprovada: 300, saldo: 1250.5 },
+    { codigo_sap: '10017388', descricao: 'Conector cunha estribo', unidade: 'UN', aprovada: 40, saldo: 84 },
+    { codigo_sap: '10061204', descricao: 'Chave fusível 15kV 100A', unidade: 'PC', aprovada: 12, saldo: 9 },
+    { codigo_sap: '10022010', descricao: 'Fita isolante 19mm x 20m', unidade: 'RL', aprovada: 10, saldo: 36 },
+  ],
+  divergencias: [
+    { id: 1, rem: 412, tipo: 'Atendimento', rota: '211 → B05', codigo_sap: '10017388', descricao: 'Conector cunha estribo', motivo: 'Falta', dif: 4, un: 'UN', aberto: 4, dias: 5 },
+    { id: 2, rem: 409, tipo: 'Atendimento', rota: '211 → B07', codigo_sap: '10040112', descricao: 'Isolador pino polimérico 15kV', motivo: 'Avaria', dif: 2, un: 'UN', aberto: 2, dias: 7 },
+    { id: 3, rem: 405, tipo: 'Transferência', rota: 'B03 → B09', codigo_sap: '10004521', descricao: 'Cabo de cobre nu 16mm²', motivo: 'Sobra', dif: -15, un: 'M', aberto: 15, dias: 9 },
+  ],
+  indicadores: [
+    { cod: '211', nome: 'Almoxarifado regional', at: '96,4%', rec: 38, div: '0%', tr: '1,8', perda: '—', aj: '1 · R$ 212,40', sai: 'R$ 18.402,10' },
+    { cod: 'B03', nome: 'Base Contagem', at: '92,1%', rec: 14, div: '7,1%', tr: '1,5', perda: '—', aj: '—', sai: 'R$ 6.110,00' },
+    { cod: 'B05', nome: 'Base Betim', at: '88,0%', rec: 11, div: '18,2%', tr: '2,4', perda: 'R$ 96,00', aj: '2 · R$ 540,00', sai: 'R$ 4.980,55' },
+    { cod: 'B07', nome: 'Base Sete Lagoas', at: '95,5%', rec: 9, div: '11,1%', tr: '3,1', perda: '—', aj: '—', sai: 'R$ 3.204,90' },
+  ],
+  dias: ['01/09','04/09','07/09','10/09','13/09','16/09','19/09','22/09','25/09','28/09'],
+};

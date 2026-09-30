@@ -69,6 +69,7 @@ export function PedidoDetalhe() {
         }
         sub={`${solicitante?.nome} → ${atendente?.codigo} · ${atendente?.nome}${p.externo ? ' (pedido externo)' : ''}`}
         voltar={{ para: '/pedidos', rotulo: 'Pedidos' }}
+        trilha={[{ rotulo: 'Pedidos', para: '/pedidos' }, formatarDoc('PED', p.numero)]}
         acoes={
           <>
             {remessa && (

@@ -94,6 +94,7 @@ export function ImportarMateriais() {
         titulo="Importar materiais"
         sub="Planilha exportada do SAP (XLSX ou CSV). Códigos já cadastrados não são atualizados."
         voltar={{ para: '/admin/materiais', rotulo: 'Materiais' }}
+        trilha={['Cadastros', { rotulo: 'Materiais', para: '/admin/materiais' }, 'Importar']}
       />
       <div className="cartao pilha">
         <Campo rotulo="1. Arquivo" ajuda={arquivo ?? 'A linha de cabeçalho é detectada automaticamente.'}>

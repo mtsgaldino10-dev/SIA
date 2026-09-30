@@ -33,6 +33,7 @@ export function Divergencias() {
     <div className="pilha">
       <PaginaTopo
         titulo="Divergências"
+        trilha={['Operação', 'Divergências']}
         sub="Divergência não some sozinha: fica aberta até ser tratada com justificativa."
       />
       <Aviso tipo="sucesso">{ok}</Aviso>
@@ -160,7 +161,7 @@ function FormTratamento({ div, onFeito }: { div: Div; onFeito: () => Promise<voi
   }
 
   return (
-    <div className="pilha" style={{ padding: '8px 0' }}>
+    <div className="pilha tratamento">
       <div className="grade-2">
         <Campo rotulo="Tratamento" ajuda={tipo ? EXPLICACAO[tipo] : undefined}>
           <select value={tipo} onChange={(e) => setTipo(e.target.value as Enum<'tipo_tratamento'>)}>

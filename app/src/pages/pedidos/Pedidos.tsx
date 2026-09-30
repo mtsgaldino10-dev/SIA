@@ -30,6 +30,7 @@ export function Pedidos() {
     <div className="pilha">
       <PaginaTopo
         titulo="Pedidos"
+        trilha={['Operação', 'Pedidos']}
         acoes={
           almoxResponsavel.length > 0 && (
             <Link className="botao primario" to="/pedidos/novo">
@@ -110,7 +111,11 @@ export function NovoPedido() {
 
   return (
     <form className="pilha" onSubmit={criar}>
-      <PaginaTopo titulo="Novo pedido" voltar={{ para: '/pedidos', rotulo: 'Pedidos' }} />
+      <PaginaTopo
+        titulo="Novo pedido"
+        voltar={{ para: '/pedidos', rotulo: 'Pedidos' }}
+        trilha={[{ rotulo: 'Pedidos', para: '/pedidos' }, 'Novo pedido']}
+      />
       <div className="cartao pilha">
         <Campo rotulo="Almoxarifado solicitante" ajuda="O pedido vai para o almoxarifado que abastece este.">
           <select value={almoxId} onChange={(e) => setAlmoxId(e.target.value)}>

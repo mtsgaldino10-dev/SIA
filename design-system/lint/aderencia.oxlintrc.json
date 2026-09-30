@@ -1,0 +1,202 @@
+{
+  "plugins": [
+    "react",
+    "import"
+  ],
+  "jsPlugins": [
+    "./restricted-syntax.mjs"
+  ],
+  "rules": {
+    "react/forbid-elements": [
+      "warn",
+      {
+        "forbid": []
+      }
+    ],
+    "no-restricted-imports": [
+      "warn",
+      {
+        "patterns": [
+          {
+            "group": [
+              "components/brand/**",
+              "components/charts/**",
+              "components/data/**",
+              "components/feedback/**",
+              "components/forms/**",
+              "components/layout/**",
+              "ui_kits/sia-movel/**",
+              "ui_kits/sia-web/**"
+            ],
+            "message": "Import design-system components from 'index.js', not component internals."
+          }
+        ]
+      }
+    ],
+    "design-system/restricted-syntax": [
+      "warn",
+      {
+        "selector": "Literal[value=/#[0-9a-fA-F]{3,8}\\b/]",
+        "message": "Raw hex color — use a design-system color token via var()."
+      },
+      {
+        "selector": "Literal[value=/\\b\\d+px\\b/]",
+        "message": "Raw px value — use a design-system spacing token via var()."
+      },
+      {
+        "selector": "Literal[value=/font-family\\s*:\\s*(?!['\\\"]?(?:Barlow|IBM Plex Mono))/i]",
+        "message": "Font not provided by the design system. Available: Barlow, IBM Plex Mono."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Abas'] > JSXAttribute > JSXIdentifier[name!=/^(?:abas|ativa|onChange|key|ref|className|style|children)$/]",
+        "message": "<Abas> doesn't accept that prop. Declared props: abas, ativa, onChange."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Aviso'] > JSXAttribute > JSXIdentifier[name!=/^(?:tipo|children|key|ref|className|style|children)$/]",
+        "message": "<Aviso> doesn't accept that prop. Declared props: tipo, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Aviso'] > JSXAttribute[name.name='tipo'] > Literal[value!=/^(?:erro|sucesso|info|atencao)$/]",
+        "message": "<Aviso> tipo must be one of 'erro' | 'sucesso' | 'info' | 'atencao'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='BarraInferior'] > JSXAttribute > JSXIdentifier[name!=/^(?:itens|ativo|onNavegar|onMais|key|ref|className|style|children)$/]",
+        "message": "<BarraInferior> doesn't accept that prop. Declared props: itens, ativo, onNavegar, onMais."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Botao'] > JSXAttribute > JSXIdentifier[name!=/^(?:variante|tamanho|disabled|largo|href|onClick|type|children|key|ref|className|style|children)$/]",
+        "message": "<Botao> doesn't accept that prop. Declared props: variante, tamanho, disabled, largo, href, onClick, type, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Botao'] > JSXAttribute[name.name='variante'] > Literal[value!=/^(?:primario|secundario|perigo|fantasma)$/]",
+        "message": "<Botao> variante must be one of 'primario' | 'secundario' | 'perigo' | 'fantasma'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Botao'] > JSXAttribute[name.name='tamanho'] > Literal[value!=/^(?:normal|peq)$/]",
+        "message": "<Botao> tamanho must be one of 'normal' | 'peq'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Botao'] > JSXAttribute[name.name='type'] > Literal[value!=/^(?:button|submit)$/]",
+        "message": "<Botao> type must be one of 'button' | 'submit'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Breadcrumb'] > JSXAttribute > JSXIdentifier[name!=/^(?:itens|key|ref|className|style|children)$/]",
+        "message": "<Breadcrumb> doesn't accept that prop. Declared props: itens."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='BuscaComando'] > JSXAttribute > JSXIdentifier[name!=/^(?:placeholder|atalho|escuro|onClick|key|ref|className|style|children)$/]",
+        "message": "<BuscaComando> doesn't accept that prop. Declared props: placeholder, atalho, escuro, onClick."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Campo'] > JSXAttribute > JSXIdentifier[name!=/^(?:rotulo|ajuda|erro|children|style|key|ref|className|style|children)$/]",
+        "message": "<Campo> doesn't accept that prop. Declared props: rotulo, ajuda, erro, children, style."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Carregando'] > JSXAttribute > JSXIdentifier[name!=/^(?:texto|key|ref|className|style|children)$/]",
+        "message": "<Carregando> doesn't accept that prop. Declared props: texto."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Cartao'] > JSXAttribute > JSXIdentifier[name!=/^(?:titulo|sub|acao|periodo|onPeriodo|menu|onMenu|fita|espacamento|children|key|ref|className|style|children)$/]",
+        "message": "<Cartao> doesn't accept that prop. Declared props: titulo, sub, acao, periodo, onPeriodo, menu, onMenu, fita, espacamento, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Dados'] > JSXAttribute > JSXIdentifier[name!=/^(?:itens|key|ref|className|style|children)$/]",
+        "message": "<Dados> doesn't accept that prop. Declared props: itens."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Doc'] > JSXAttribute > JSXIdentifier[name!=/^(?:prefixo|numero|forte|key|ref|className|style|children)$/]",
+        "message": "<Doc> doesn't accept that prop. Declared props: prefixo, numero, forte."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Doc'] > JSXAttribute[name.name='prefixo'] > Literal[value!=/^(?:PED|REM|SAI|AJU)$/]",
+        "message": "<Doc> prefixo must be one of 'PED' | 'REM' | 'SAI' | 'AJU'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='FatiaDonut'] > JSXAttribute > JSXIdentifier[name!=/^(?:rotulo|valor|cor|key|ref|className|style|children)$/]",
+        "message": "<FatiaDonut> doesn't accept that prop. Declared props: rotulo, valor, cor."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Entrada'] > JSXAttribute > JSXIdentifier[name!=/^(?:value|onChange|num|invalido|type|placeholder|multilinha|key|ref|className|style|children)$/]",
+        "message": "<Entrada> doesn't accept that prop. Declared props: value, onChange, num, invalido, type, placeholder, multilinha."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Entrada'] > JSXAttribute[name.name='type'] > Literal[value!=/^(?:text|search|password|date|file)$/]",
+        "message": "<Entrada> type must be one of 'text' | 'search' | 'password' | 'date' | 'file'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Etiqueta'] > JSXAttribute > JSXIdentifier[name!=/^(?:valor|legenda|tom|compacta|serie|variacao|onClick|href|key|ref|className|style|children)$/]",
+        "message": "<Etiqueta> doesn't accept that prop. Declared props: valor, legenda, tom, compacta, serie, variacao, onClick, href."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Etiqueta'] > JSXAttribute[name.name='tom'] > Literal[value!=/^(?:alerta|transito|ok|info)$/]",
+        "message": "<Etiqueta> tom must be one of 'alerta' | 'transito' | 'ok' | 'info'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Fita'] > JSXAttribute > JSXIdentifier[name!=/^(?:altura|key|ref|className|style|children)$/]",
+        "message": "<Fita> doesn't accept that prop. Declared props: altura."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='SerieLinha'] > JSXAttribute > JSXIdentifier[name!=/^(?:nome|cor|valores|key|ref|className|style|children)$/]",
+        "message": "<SerieLinha> doesn't accept that prop. Declared props: nome, cor, valores."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ItemLista'] > JSXAttribute > JSXIdentifier[name!=/^(?:titulo|direita|sub|subDireita|onClick|href|key|ref|className|style|children)$/]",
+        "message": "<ItemLista> doesn't accept that prop. Declared props: titulo, direita, sub, subDireita, onClick, href."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Marca'] > JSXAttribute > JSXIdentifier[name!=/^(?:comNome|cor|key|ref|className|style|children)$/]",
+        "message": "<Marca> doesn't accept that prop. Declared props: comNome, cor."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Material'] > JSXAttribute > JSXIdentifier[name!=/^(?:codigo_sap|descricao|unidade|key|ref|className|style|children)$/]",
+        "message": "<Material> doesn't accept that prop. Declared props: codigo_sap, descricao, unidade."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ItemMenu'] > JSXAttribute > JSXIdentifier[name!=/^(?:id|rotulo|contagem|alerta|key|ref|className|style|children)$/]",
+        "message": "<ItemMenu> doesn't accept that prop. Declared props: id, rotulo, contagem, alerta."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='PaginaTopo'] > JSXAttribute > JSXIdentifier[name!=/^(?:titulo|sub|voltar|trilha|acoes|key|ref|className|style|children)$/]",
+        "message": "<PaginaTopo> doesn't accept that prop. Declared props: titulo, sub, voltar, trilha, acoes."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Qtd'] > JSXAttribute > JSXIdentifier[name!=/^(?:valor|unidade|sinal|key|ref|className|style|children)$/]",
+        "message": "<Qtd> doesn't accept that prop. Declared props: valor, unidade, sinal."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Selecao'] > JSXAttribute > JSXIdentifier[name!=/^(?:value|onChange|opcoes|vazio|key|ref|className|style|children)$/]",
+        "message": "<Selecao> doesn't accept that prop. Declared props: value, onChange, opcoes, vazio."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Simbolo'] > JSXAttribute > JSXIdentifier[name!=/^(?:tamanho|cor|key|ref|className|style|children)$/]",
+        "message": "<Simbolo> doesn't accept that prop. Declared props: tamanho, cor."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Sparkline'] > JSXAttribute > JSXIdentifier[name!=/^(?:valores|cor|largura|altura|key|ref|className|style|children)$/]",
+        "message": "<Sparkline> doesn't accept that prop. Declared props: valores, cor, largura, altura."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='StatusBadge'] > JSXAttribute > JSXIdentifier[name!=/^(?:status|tom|children|key|ref|className|style|children)$/]",
+        "message": "<StatusBadge> doesn't accept that prop. Declared props: status, tom, children."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ColunaTabela'] > JSXAttribute > JSXIdentifier[name!=/^(?:chave|rotulo|num|mono|largura|render|key|ref|className|style|children)$/]",
+        "message": "<ColunaTabela> doesn't accept that prop. Declared props: chave, rotulo, num, mono, largura, render."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Vazio'] > JSXAttribute > JSXIdentifier[name!=/^(?:children|key|ref|className|style|children)$/]",
+        "message": "<Vazio> doesn't accept that prop. Declared props: children."
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/index.js"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ]
+}

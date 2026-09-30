@@ -27,7 +27,7 @@ import { Saldo } from './pages/Saldo'
 
 function Protegida({ children }: { children: ReactNode }) {
   const { session, carregando, perfil, erro, sair } = useSessao()
-  if (carregando) return <Carregando texto="Abrindo o SIA…" />
+  if (carregando) return <Carregando texto="Abrindo o Warefly…" />
   if (!session) return <Navigate to="/login" replace />
   if (!perfil?.ativo) {
     return (

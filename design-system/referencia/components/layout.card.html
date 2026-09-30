@@ -1,0 +1,18 @@
+<!-- @dsCard group="Components" viewport="700x560" name="Layout" -->
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../_ds_bundle.js"></script>
+<style>body{padding:20px}.g{display:flex;flex-direction:column;gap:14px}.r{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.l{font:400 .72rem var(--fonte-mono);color:var(--texto-2);width:90px;flex:none}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.SIADesignSystem_ad870b;
+
+function Demo(){ const { MenuLateral, Cartao, PaginaTopo, BarraInferior, CabecalhoMovel, Botao, Breadcrumb } = NS; return <div style={{display:'flex',gap:16}}>
+<MenuLateral altura={520} ativo="pedidos" grupos={[{grupo:'Operação',itens:[{id:'inicio',rotulo:'Início'},{id:'saldo',rotulo:'Saldo'},{id:'pedidos',rotulo:'Pedidos',contagem:4},{id:'remessas',rotulo:'Remessas'},{id:'div',rotulo:'Divergências',contagem:3,alerta:true}]},{grupo:'Gestão',itens:[{id:'painel',rotulo:'Painel da gestão'}]}]} usuario={{nome:'Ana Souza',papel:'Responsável'}}/>
+<div className="g" style={{flex:1,minWidth:0}}><PaginaTopo trilha={['Pedidos','PED-001042']} titulo="Pedidos" sub="Fila do 211 e pedidos abertos." acoes={<Botao>Novo pedido</Botao>}/>
+<Cartao titulo="Remessas por status" periodo="Últimos 30 dias" menu><p className="sec peq">Conteúdo do cartão.</p></Cartao>
+<Cartao titulo="Ajustes de inventário" fita><p className="sec peq">Região de atenção.</p></Cartao>
+<div style={{border:'1px solid var(--borda)',borderRadius:6,overflow:'hidden'}}><CabecalhoMovel nome="Carlos Lima"/><div style={{height:30}}/><BarraInferior ativo="inicio" itens={[{id:'inicio',rotulo:'Início'},{id:'saldo',rotulo:'Saldo'},{id:'pedidos',rotulo:'Pedidos'},{id:'remessas',rotulo:'Remessas'}]}/></div></div></div>; }
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script></body></html>

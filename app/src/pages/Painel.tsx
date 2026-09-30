@@ -1,41 +1,28 @@
-import { useId, useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useSessao } from '../auth/SessaoContext'
-import { Aviso, Campo, Carregando, Doc, PaginaTopo, Vazio } from '../components/ui'
-import { formatarData, formatarMoeda, formatarQtd, hojeISO } from '../lib/formato'
-import { supabase } from '../lib/supabase'
+import { Donut, GraficoLinha } from '../components/graficos'
+import { FiltroPeriodo, MenuAcoes } from '../components/Menus'
+import { Aviso, Campo, Carregando, Doc, Etiqueta, PaginaTopo, Regiao, StatusBadge, Vazio } from '../components/ui'
+import { formatarData, formatarDoc, formatarMoeda, formatarQtd } from '../lib/formato'
+import { baixarPlanilha } from '../lib/planilha'
+import { contarPorDia, diasDoPeriodo, emTransitoPorDia, formatarDiaMes, ultimosDias, type Periodo } from '../lib/series'
+import { carregarTodos, supabase } from '../lib/supabase'
 import { listaOuErro, useConsulta } from '../lib/useConsulta'
 
 const pct = new Intl.NumberFormat('pt-BR', { style: 'percent', maximumFractionDigits: 1 })
 const formatarPct = (v: number | null | undefined) => (v === null || v === undefined ? '—' : pct.format(Number(v)))
 
-function diasAtras(n: number) {
-  const d = new Date(`${hojeISO()}T12:00:00`)
-  d.setDate(d.getDate() - n)
-  return d.toISOString().slice(0, 10)
-}
-
-function Regiao({ titulo, sub, children }: { titulo: string; sub?: string; children: ReactNode }) {
-  const id = useId()
-  return (
-    <section className="cartao pilha" aria-labelledby={id}>
-      <div>
-        <h2 id={id}>{titulo}</h2>
-        {sub && <p className="sec peq" style={{ marginTop: 4 }}>{sub}</p>}
-      </div>
-      {children}
-    </section>
-  )
-}
+type RemessaPeriodo = { id: string; status: string; data_envio: string; data_recebimento: string | null }
 
 export function Painel() {
-  const { veTudo } = useSessao()
-  const [de, setDe] = useState(diasAtras(30))
-  const [ate, setAte] = useState(hojeISO())
+  const { veTudo, almox } = useSessao()
+  const [periodo, setPeriodo] = useState<Periodo>(() => ultimosDias(30))
   const [diasParada, setDiasParada] = useState('3')
+  const { de, ate } = periodo
 
   const consulta = useConsulta(async () => {
-    const [indicadores, consumo, ajustes, transito] = await Promise.all([
+    const [indicadores, consumo, ajustes, transito, remessas, divergencias] = await Promise.all([
       listaOuErro(supabase.rpc('fn_indicadores', { p_de: de, p_ate: ate })),
       listaOuErro(supabase.rpc('fn_consumo', { p_de: de, p_ate: ate })),
       listaOuErro(
@@ -48,40 +35,136 @@ export function Painel() {
           .order('data_ocorrencia', { ascending: false }),
       ),
       listaOuErro(supabase.from('v_em_transito').select('remessa_id, remessa_numero, origem_nome, destino_nome, data_envio, dias_em_transito')),
+      // Toda remessa que esteve em trânsito em algum dia do período: base dos gráficos.
+      carregarTodos<RemessaPeriodo>((i, f) =>
+        supabase
+          .from('remessas')
+          .select('id, status, data_envio, data_recebimento')
+          .lte('data_envio', ate)
+          .or(`data_recebimento.is.null,data_recebimento.gte.${de}`)
+          .order('id')
+          .range(i, f),
+      ),
+      supabase.from('v_divergencias_abertas').select('remessa_item_id', { count: 'exact', head: true }),
     ])
-    return { indicadores, consumo, ajustes, transito }
+    if (divergencias.error) throw divergencias.error
+    return { indicadores, consumo, ajustes, transito, remessas, divergenciasAbertas: divergencias.count ?? 0 }
   }, [de, ate])
+
+  const d = consulta.dados
 
   const paradas = useMemo(() => {
     const limite = Number(diasParada) || 0
-    const porRemessa = new Map<string, NonNullable<typeof consulta.dados>['transito'][number]>()
-    for (const t of consulta.dados?.transito ?? []) if ((t.dias_em_transito ?? 0) > limite) porRemessa.set(t.remessa_id ?? '', t)
+    const porRemessa = new Map<string, NonNullable<typeof d>['transito'][number]>()
+    for (const t of d?.transito ?? []) if ((t.dias_em_transito ?? 0) > limite) porRemessa.set(t.remessa_id ?? '', t)
     return [...porRemessa.values()].sort((a, b) => (b.dias_em_transito ?? 0) - (a.dias_em_transito ?? 0))
-  }, [consulta.dados, diasParada])
+  }, [d, diasParada])
 
-  const { almox } = useSessao()
+  const graficos = useMemo(() => {
+    if (!d) return null
+    const dias = diasDoPeriodo(de, ate)
+    const enviadasNoPeriodo = d.remessas.filter((r) => r.data_envio >= de)
+    const enviadas = contarPorDia(enviadasNoPeriodo.map((r) => r.data_envio), dias)
+    const recebidas = contarPorDia(d.remessas.map((r) => r.data_recebimento), dias)
+    const porStatus = (s: string) => enviadasNoPeriodo.filter((r) => r.status === s).length
+    const bases = d.indicadores.filter((i) => i.almox_tipo === 'base')
+    const solicitada = bases.reduce((s, i) => s + Number(i.qtd_solicitada), 0)
+    const enviada = bases.reduce((s, i) => s + Number(i.qtd_enviada), 0)
+    return {
+      rotulos: dias.map(formatarDiaMes),
+      enviadas,
+      recebidas,
+      emTransito: emTransitoPorDia(d.remessas, dias),
+      totalEnviadas: enviadasNoPeriodo.length,
+      totalRecebidas: recebidas.reduce((s, n) => s + n, 0),
+      atendimento: solicitada ? enviada / solicitada : null,
+      fatias: [
+        { rotulo: 'Encerrada', valor: porStatus('encerrada'), cor: 'var(--st-ok)' },
+        { rotulo: 'Em trânsito', valor: porStatus('em_transito'), cor: 'var(--st-transito)' },
+        { rotulo: 'Com divergência', valor: porStatus('com_divergencia'), cor: 'var(--st-alerta)' },
+      ],
+    }
+  }, [d, de, ate])
+
   if (!veTudo) return <Aviso tipo="erro">Painel restrito à gestão.</Aviso>
-  const d = consulta.dados
+
+  const sufixo = `${de}-a-${ate}`
+  const emTransitoAgora = new Set(d?.transito.map((t) => t.remessa_id)).size
 
   return (
     <div className="pilha">
-      <PaginaTopo titulo="Painel da gestão" sub="Indicadores do período. Remessas paradas mostram a situação de agora." />
-      <div className="linha-fim">
-        <Campo rotulo="De">
-          <input type="date" value={de} max={ate} onChange={(e) => setDe(e.target.value)} />
-        </Campo>
-        <Campo rotulo="Até">
-          <input type="date" value={ate} min={de} max={hojeISO()} onChange={(e) => setAte(e.target.value)} />
-        </Campo>
-      </div>
+      <PaginaTopo
+        titulo="Painel da gestão"
+        trilha={['Gestão', 'Painel da gestão']}
+        sub="Indicadores do período. Remessas paradas mostram a situação de agora."
+        acoes={<FiltroPeriodo valor={periodo} onChange={setPeriodo} />}
+      />
       <Aviso tipo="erro">{consulta.erro}</Aviso>
-      {!d ? (
+      {!d || !graficos ? (
         <Carregando />
       ) : (
         <>
+          <div className="grade-cartoes">
+            <Etiqueta valor={emTransitoAgora} legenda="Remessas em trânsito" tom="transito" serie={graficos.emTransito} href="/remessas" />
+            <Etiqueta valor={graficos.totalRecebidas} legenda="Recebidas no período" tom="ok" serie={graficos.recebidas} />
+            <Etiqueta valor={formatarPct(graficos.atendimento)} legenda="Atendimento às bases" tom="info" />
+            <Etiqueta
+              valor={d.divergenciasAbertas}
+              legenda="Divergências abertas"
+              tom={d.divergenciasAbertas ? 'alerta' : 'ok'}
+              href="/divergencias"
+            />
+          </div>
+
+          <div className="grade-graficos">
+            <Regiao titulo="Remessas enviadas × recebidas" sub="Por dia, todos os almoxarifados.">
+              <GraficoLinha
+                rotulosX={graficos.rotulos}
+                unidade=" rem."
+                descricao={`Remessas por dia de ${formatarData(de)} a ${formatarData(ate)}: ${graficos.totalEnviadas} enviadas e ${graficos.totalRecebidas} recebidas.`}
+                series={[
+                  { nome: 'Enviadas', cor: 'var(--cor-marca)', valores: graficos.enviadas },
+                  { nome: 'Recebidas', cor: 'var(--cor-estrutura)', valores: graficos.recebidas },
+                ]}
+              />
+            </Regiao>
+            <Regiao titulo="Remessas por status" sub="Enviadas no período, situação de agora.">
+              {graficos.totalEnviadas === 0 ? (
+                <Vazio>Nenhuma remessa enviada no período.</Vazio>
+              ) : (
+                <Donut tamanho={150} espessura={20} centro={graficos.totalEnviadas} legendaCentro="remessas" fatias={graficos.fatias} />
+              )}
+            </Regiao>
+          </div>
+
           <Regiao
             titulo="Indicadores por almoxarifado"
             sub="Atendimento = enviado ÷ solicitado. Divergência = remessas com diferença ÷ recebidas. Perda = baixas em trânsito."
+            acoes={
+              <MenuAcoes
+                itens={[
+                  {
+                    rotulo: 'Baixar planilha',
+                    onClick: () =>
+                      baixarPlanilha(`indicadores-${sufixo}.xlsx`, [
+                        ['Código', 'Almoxarifado', 'Atendimento', 'Recebidas', 'Divergência', 'Trânsito (dias)', 'Perda em trânsito (R$)', 'Ajustes', 'Ajustes (R$)', 'Saídas (R$)'],
+                        ...d.indicadores.map((i) => [
+                          i.almox_codigo,
+                          i.almox_nome,
+                          i.taxa_atendimento,
+                          i.remessas_recebidas,
+                          i.indice_divergencia,
+                          i.tempo_transito_medio,
+                          i.perda_transito_valor,
+                          i.ajustes_qtd,
+                          i.ajustes_valor_abs,
+                          i.saidas_valor,
+                        ]),
+                      ]),
+                  },
+                ]}
+              />
+            }
           >
             <div className="tabela-envoltorio">
               <table>
@@ -105,14 +188,10 @@ export function Painel() {
                       </td>
                       <td className="num">{formatarPct(i.taxa_atendimento)}</td>
                       <td className="num">{i.remessas_recebidas}</td>
-                      <td className="num" style={Number(i.indice_divergencia) > 0 ? { color: 'var(--st-alerta-texto)', fontWeight: 600 } : undefined}>
-                        {formatarPct(i.indice_divergencia)}
-                      </td>
+                      <td className={Number(i.indice_divergencia) > 0 ? 'num valor-critico' : 'num'}>{formatarPct(i.indice_divergencia)}</td>
                       <td className="num">{formatarQtd(i.tempo_transito_medio)}</td>
                       <td className="num">{Number(i.perda_transito_valor) ? formatarMoeda(i.perda_transito_valor) : '—'}</td>
-                      <td className="num">
-                        {i.ajustes_qtd ? `${i.ajustes_qtd} · ${formatarMoeda(i.ajustes_valor_abs)}` : '—'}
-                      </td>
+                      <td className="num">{i.ajustes_qtd ? `${i.ajustes_qtd} · ${formatarMoeda(i.ajustes_valor_abs)}` : '—'}</td>
                       <td className="num">{Number(i.saidas_valor) ? formatarMoeda(i.saidas_valor) : '—'}</td>
                     </tr>
                   ))}
@@ -121,8 +200,34 @@ export function Painel() {
             </div>
           </Regiao>
 
-          <Regiao titulo="Ajustes de inventário" sub="Todo ajuste aparece aqui em destaque, com a justificativa de quem contou.">
-            <div className="fita" aria-hidden="true" />
+          <Regiao
+            titulo="Ajustes de inventário"
+            sub="Todo ajuste aparece aqui em destaque, com a justificativa de quem contou."
+            fita
+            acoes={
+              d.ajustes.length > 0 && (
+                <MenuAcoes
+                  itens={[
+                    {
+                      rotulo: 'Baixar planilha',
+                      onClick: () =>
+                        baixarPlanilha(`ajustes-${sufixo}.xlsx`, [
+                          ['Ajuste', 'Almoxarifado', 'Data', 'Justificativa', 'Itens', 'Valor absoluto (R$)'],
+                          ...d.ajustes.map((a) => [
+                            formatarDoc('AJU', a.numero),
+                            almox(a.almox_id)?.nome ?? '',
+                            formatarData(a.data_ocorrencia),
+                            a.justificativa,
+                            (a.ajuste_itens ?? []).filter((it) => Number(it.diferenca) !== 0).length,
+                            valorAjuste(a.ajuste_itens),
+                          ]),
+                        ]),
+                    },
+                  ]}
+                />
+              )
+            }
+          >
             {d.ajustes.length === 0 ? (
               <Vazio>Nenhum ajuste de inventário no período.</Vazio>
             ) : (
@@ -139,24 +244,18 @@ export function Painel() {
                     </tr>
                   </thead>
                   <tbody>
-                    {d.ajustes.map((a) => {
-                      const valor = (a.ajuste_itens ?? []).reduce(
-                        (s, it) => s + Math.abs(Number(it.diferenca ?? 0)) * Number(it.materiais?.preco ?? 0),
-                        0,
-                      )
-                      return (
-                        <tr key={a.id}>
-                          <td>
-                            <Doc prefixo="AJU" numero={a.numero} />
-                          </td>
-                          <td>{almox(a.almox_id)?.nome}</td>
-                          <td>{formatarData(a.data_ocorrencia)}</td>
-                          <td>{a.justificativa}</td>
-                          <td className="num">{(a.ajuste_itens ?? []).filter((it) => Number(it.diferenca) !== 0).length}</td>
-                          <td className="num">{formatarMoeda(valor)}</td>
-                        </tr>
-                      )
-                    })}
+                    {d.ajustes.map((a) => (
+                      <tr key={a.id}>
+                        <td>
+                          <Doc prefixo="AJU" numero={a.numero} />
+                        </td>
+                        <td>{almox(a.almox_id)?.nome}</td>
+                        <td>{formatarData(a.data_ocorrencia)}</td>
+                        <td>{a.justificativa}</td>
+                        <td className="num">{(a.ajuste_itens ?? []).filter((it) => Number(it.diferenca) !== 0).length}</td>
+                        <td className="num">{formatarMoeda(valorAjuste(a.ajuste_itens))}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -177,7 +276,7 @@ export function Painel() {
                       <span>
                         <Doc prefixo="REM" numero={r.remessa_numero ?? 0} /> · {r.origem_nome} → {r.destino_nome}
                       </span>
-                      <span className="badge transito">{r.dias_em_transito} dias</span>
+                      <StatusBadge tom="transito">{r.dias_em_transito} dias</StatusBadge>
                     </div>
                   </Link>
                 ))}
@@ -185,11 +284,30 @@ export function Painel() {
             )}
           </Regiao>
 
-          <Regiao titulo="Consumo" sub="Saídas registradas por base e material, ordenadas por valor.">
+          <Regiao
+            titulo="Consumo"
+            sub="Saídas registradas por base e material, ordenadas por valor."
+            acoes={
+              d.consumo.length > 0 && (
+                <MenuAcoes
+                  itens={[
+                    {
+                      rotulo: 'Baixar planilha',
+                      onClick: () =>
+                        baixarPlanilha(`consumo-${sufixo}.xlsx`, [
+                          ['Almoxarifado', 'Código SAP', 'Descrição', 'Quantidade', 'Unidade', 'Valor (R$)'],
+                          ...d.consumo.map((c) => [c.almox_nome, c.codigo_sap, c.descricao, c.quantidade, c.unidade, c.valor]),
+                        ]),
+                    },
+                  ]}
+                />
+              )
+            }
+          >
             {d.consumo.length === 0 ? (
               <Vazio>Nenhuma saída no período.</Vazio>
             ) : (
-              <div className="tabela-envoltorio" style={{ maxHeight: 420, overflowY: 'auto' }}>
+              <div className="tabela-envoltorio rolagem">
                 <table>
                   <thead>
                     <tr>
@@ -221,4 +339,9 @@ export function Painel() {
       )}
     </div>
   )
+}
+
+/** Σ |diferença| × preço dos itens do ajuste. */
+function valorAjuste(itens: { diferenca: number | null; materiais: { preco: number | null } | null }[] | null) {
+  return (itens ?? []).reduce((s, it) => s + Math.abs(Number(it.diferenca ?? 0)) * Number(it.materiais?.preco ?? 0), 0)
 }

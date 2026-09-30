@@ -31,7 +31,7 @@ export function Remessas() {
 
   return (
     <div className="pilha">
-      <PaginaTopo titulo="Remessas" sub="Cada remessa tem guia impressa e conferência no destino." />
+      <PaginaTopo titulo="Remessas" trilha={['Operação', 'Remessas']} sub="Cada remessa tem guia impressa e conferência no destino." />
       <div className="abas" role="tablist">
         {meus.length > 0 && (
           <>

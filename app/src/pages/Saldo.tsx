@@ -35,7 +35,7 @@ export function Saldo() {
   const [params, setParams] = useSearchParams()
   const padrao = almoxResponsavel[0]?.id ?? almoxVisiveis[0]?.id ?? ''
   const almoxId = params.get('almox') ?? padrao
-  const [termo, setTermo] = useState('')
+  const [termo, setTermo] = useState(params.get('busca') ?? '')
   const [zerados, setZerados] = useState(false)
 
   const consulta = useConsulta(
@@ -61,7 +61,7 @@ export function Saldo() {
 
   return (
     <div className="pilha">
-      <PaginaTopo titulo="Saldo" sub="Saldo é sempre a soma das movimentações. Nunca é editado." />
+      <PaginaTopo titulo="Saldo" trilha={['Operação', 'Saldo']} sub="Saldo é sempre a soma das movimentações. Nunca é editado." />
       <div className="grade-2">
         <SeletorAlmox valor={almoxId} onChange={(id) => setParams({ almox: id })} opcoes={almoxVisiveis} />
         <Campo rotulo="Buscar">

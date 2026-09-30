@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useCatalogo } from '../auth/CatalogoContext'
 import { useSessao } from '../auth/SessaoContext'
 import { rotuloStatus } from '../lib/formato'
+import { supabase } from '../lib/supabase'
+import { BuscaComando, DialogoBusca } from './BuscaGlobal'
 import { Aviso, Marca } from './ui'
 
 type ItemMenu = { para: string; rotulo: string; grupo: string; curto?: string; principal?: boolean }
@@ -38,58 +40,124 @@ export function useMenu(): ItemMenu[] {
   return itens
 }
 
+/**
+ * Contadores do menu: pedidos na fila do 211 e divergências abertas.
+ * Recontam a cada troca de página. Se a contagem falhar, o contador só não aparece.
+ */
+function useContagens(regionais: string, rota: string) {
+  const [contagens, setContagens] = useState<Record<string, number | null>>({})
+  useEffect(() => {
+    let vivo = true
+    const ids = regionais ? regionais.split(',') : []
+    void Promise.all([
+      ids.length
+        ? supabase
+            .from('pedidos')
+            .select('id', { count: 'exact', head: true })
+            .in('atendente_id', ids)
+            .in('status', ['solicitado', 'aprovado'])
+            .eq('externo', false)
+        : null,
+      supabase.from('v_divergencias_abertas').select('remessa_item_id', { count: 'exact', head: true }),
+    ]).then(([fila, divergencias]) => {
+      if (vivo) setContagens({ '/pedidos': fila?.count ?? null, '/divergencias': divergencias.count ?? null })
+    })
+    return () => {
+      vivo = false
+    }
+  }, [regionais, rota])
+  return contagens
+}
+
+function ItemDoMenu({ item, contagem }: { item: ItemMenu; contagem: number | null | undefined }) {
+  const id = useId()
+  const alerta = item.para === '/divergencias'
+  return (
+    <>
+      <NavLink to={item.para} end={item.para === '/' || item.para === '/movimentar'} aria-describedby={contagem ? id : undefined}>
+        {item.rotulo}
+        {!!contagem && (
+          <span className={alerta ? 'menu-contagem alerta' : 'menu-contagem'} aria-hidden="true">
+            {contagem}
+          </span>
+        )}
+      </NavLink>
+      {!!contagem && (
+        <span id={id} hidden>
+          {alerta ? `${contagem} em aberto` : `${contagem} na fila`}
+        </span>
+      )}
+    </>
+  )
+}
+
 export function Layout() {
-  const { perfil, sair } = useSessao()
+  const { perfil, sair, almoxResponsavel } = useSessao()
   const catalogo = useCatalogo()
   const itens = useMenu()
   const [maisAberto, setMaisAberto] = useState(false)
+  const [buscaAberta, setBuscaAberta] = useState(false)
   const local = useLocation()
   const grupos = [...new Set(itens.map((i) => i.grupo))]
   const principais = itens.filter((i) => i.principal).slice(0, 4)
   const outros = itens.filter((i) => !principais.includes(i))
+  const regionais = almoxResponsavel
+    .filter((a) => a.tipo === 'regional')
+    .map((a) => a.id)
+    .join()
+  const contagens = useContagens(regionais, local.pathname)
+
+  // Ctrl+K (⌘K no Mac) abre a busca de qualquer tela.
+  useEffect(() => {
+    const tecla = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        setBuscaAberta(true)
+      }
+    }
+    window.addEventListener('keydown', tecla)
+    return () => window.removeEventListener('keydown', tecla)
+  }, [])
 
   return (
     <div className="app">
       <aside className="menu-lateral">
-        <Link to="/" style={{ color: 'inherit', textDecoration: 'none', padding: '0 10px' }}>
+        <Link to="/" className="marca-link">
           <Marca />
         </Link>
+        <BuscaComando onClick={() => setBuscaAberta(true)} />
         <nav aria-label="Menu principal">
           {grupos.map((g) => (
-            <div key={g} style={{ display: 'contents' }}>
+            <div key={g} className="menu-secao">
               <div className="menu-grupo">{g}</div>
               {itens
                 .filter((i) => i.grupo === g)
                 .map((i) => (
-                  <NavLink key={i.para} to={i.para} end={i.para === '/' || i.para === '/movimentar'}>
-                    {i.rotulo}
-                  </NavLink>
+                  <ItemDoMenu key={i.para} item={i} contagem={contagens[i.para]} />
                 ))}
             </div>
           ))}
         </nav>
         <div className="menu-rodape">
-          <div style={{ color: 'var(--cor-fundo)', fontWeight: 500 }}>{perfil?.nome}</div>
+          <div className="nome">{perfil?.nome}</div>
           <div>{rotuloStatus(perfil?.papel)}</div>
           <button type="button" onClick={() => void sair()}>
             Sair
           </button>
-          <div style={{ marginTop: 12 }}>Sistema Integrado de Almoxarifado</div>
+          <div className="produto">Gestão de almoxarifado</div>
         </div>
       </aside>
 
       <header className="cabecalho-movel">
-        <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>
+        <Link to="/" className="marca-link">
           <Marca />
         </Link>
-        <span className="peq" style={{ opacity: 0.8 }}>
-          {perfil?.nome}
-        </span>
+        <span className="usuario">{perfil?.nome}</span>
       </header>
 
       <main className="conteudo" key={local.pathname}>
         {catalogo.erro && (
-          <div style={{ marginBottom: 16 }}>
+          <div className="aviso-catalogo">
             <Aviso tipo="erro">
               Catálogo de materiais não carregou: {catalogo.erro}{' '}
               <button className="botao fantasma peq" onClick={() => void catalogo.recarregar()}>
@@ -116,17 +184,22 @@ export function Layout() {
         <>
           <div className="folha-fundo" onClick={() => setMaisAberto(false)} />
           <div className="folha" role="dialog" aria-label="Mais opções" onClick={() => setMaisAberto(false)}>
+            <button type="button" className="item-folha" onClick={() => setBuscaAberta(true)}>
+              Buscar documento ou material
+            </button>
             {outros.map((i) => (
               <Link key={i.para} to={i.para}>
                 {i.rotulo}
               </Link>
             ))}
-            <button type="button" className="botao secundario" style={{ width: '100%', marginTop: 16 }} onClick={() => void sair()}>
+            <button type="button" className="botao secundario largo" onClick={() => void sair()}>
               Sair
             </button>
           </div>
         </>
       )}
+
+      {buscaAberta && <DialogoBusca onFechar={() => setBuscaAberta(false)} />}
     </div>
   )
 }

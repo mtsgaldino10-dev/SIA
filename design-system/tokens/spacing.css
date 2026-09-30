@@ -1,0 +1,22 @@
+:root {
+  --esp-1: 2px; --esp-2: 4px; --esp-3: 6px; --esp-4: 8px; --esp-5: 10px; --esp-6: 12px;
+  --esp-7: 14px; --esp-8: 16px; --esp-9: 20px; --esp-10: 24px; --esp-11: 28px; --esp-12: 32px; --esp-13: 48px;
+
+  --raio: 6px;
+  --raio-fita: 2px;
+  --raio-folha: 12px;
+  --raio-pilula: 999px;
+
+  --borda-menu: 4px;        /* borda direita cobre do menu lateral */
+  --borda-barra: 3px;       /* borda superior cobre da barra inferior */
+  --borda-etiqueta: 6px;    /* borda esquerda da etiqueta de prateleira */
+
+  --sombra-flutuante: 0 8px 24px color-mix(in srgb, var(--cor-estrutura) 18%, transparent);
+
+  --menu-largura: 232px;
+  --barra-altura: 64px;
+  --conteudo-max: 1200px;
+  --controle-altura: 42px;
+  --controle-altura-peq: 32px;
+  --ponto-quebra: 900px;
+}

@@ -1,7 +1,7 @@
-import { useEffect, useId, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useSessao } from '../auth/SessaoContext'
-import { Aviso, Doc, Etiqueta, PaginaTopo, StatusBadge, Vazio } from '../components/ui'
+import { Aviso, Doc, Etiqueta, PaginaTopo, Regiao, StatusBadge, Vazio } from '../components/ui'
 import { formatarData } from '../lib/formato'
 import { carregarTodos, supabase, type Almox } from '../lib/supabase'
 import { listaOuErro, useConsulta } from '../lib/useConsulta'
@@ -16,7 +16,7 @@ export function Inicio() {
 
   return (
     <div className="pilha">
-      <PaginaTopo titulo={`Olá, ${perfil?.nome ?? ''}`} sub="Sistema Integrado de Almoxarifado" />
+      <PaginaTopo titulo={`Olá, ${perfil?.nome ?? ''}`} sub="Gestão de almoxarifado" />
       {regional && <Painel211 regional={regional} />}
       {bases.length > 0 && <MinhasBases bases={bases} />}
       {veTudo && <VisaoGeral />}
@@ -46,19 +46,6 @@ function useTempoReal(nome: string, recarregar: () => void) {
       void supabase.removeChannel(canal)
     }
   }, [nome, recarregar])
-}
-
-function Regiao({ titulo, children, acao }: { titulo: string; children: React.ReactNode; acao?: React.ReactNode }) {
-  const id = useId()
-  return (
-    <section className="cartao pilha" aria-labelledby={id}>
-      <div className="cartao-cab" style={{ marginBottom: 0 }}>
-        <h3 id={id}>{titulo}</h3>
-        {acao}
-      </div>
-      {children}
-    </section>
-  )
 }
 
 // ---------------------------------------------------------------------------
@@ -100,17 +87,17 @@ function Painel211({ regional }: { regional: Almox }) {
       <h2>Painel do {regional.codigo}</h2>
       <Aviso tipo="erro">{consulta.erro}</Aviso>
       <div className="grade-cartoes">
-        <Etiqueta valor={d?.fila.length ?? '…'} legenda="Pedidos na fila" tom="info" para="/pedidos" />
-        <Etiqueta valor={d?.transito.length ?? '…'} legenda="Remessas em trânsito" tom="transito" para="/remessas" />
+        <Etiqueta valor={d?.fila.length ?? '…'} legenda="Pedidos na fila" tom="info" href="/pedidos" />
+        <Etiqueta valor={d?.transito.length ?? '…'} legenda="Remessas em trânsito" tom="transito" href="/remessas" />
         <Etiqueta
           valor={d?.divergencias.length ?? '…'}
           legenda="Divergências abertas"
           tom={d?.divergencias.length ? 'alerta' : 'ok'}
-          para="/divergencias"
+          href="/divergencias"
         />
       </div>
       {d && d.fila.length > 0 && (
-        <Regiao titulo="Fila de pedidos">
+        <Regiao titulo="Fila de pedidos" nivel={3}>
           <div className="lista">
             {d.fila.map((p) => (
               <Link key={p.id} className="item-lista" to={`/pedidos/${p.id}`}>
@@ -164,17 +151,18 @@ function MinhasBases({ bases }: { bases: Almox[] }) {
             <Regiao
               key={b.id}
               titulo={b.nome}
-              acao={
+              nivel={3}
+              acoes={
                 <Link className="botao fantasma peq" to={`/saldo?almox=${b.id}`}>
                   Ver saldo
                 </Link>
               }
             >
               <div className="grade-etiquetas">
-                <Etiqueta valor={contar(d?.saldos, (s) => s.almox_id === b.id)} legenda="Materiais com saldo" para={`/saldo?almox=${b.id}`} />
-                <Etiqueta valor={d ? chegando.length : '…'} legenda="Remessas a caminho" tom="transito" para="/remessas" />
-                <Etiqueta valor={contar(d?.pedidos, (p) => p.solicitante_id === b.id)} legenda="Pedidos abertos" tom="info" para="/pedidos" />
-                <Etiqueta valor={nDiv} legenda="Divergências pendentes" tom={nDiv ? 'alerta' : 'ok'} para="/divergencias" />
+                <Etiqueta compacta valor={contar(d?.saldos, (s) => s.almox_id === b.id)} legenda="Materiais com saldo" href={`/saldo?almox=${b.id}`} />
+                <Etiqueta compacta valor={d ? chegando.length : '…'} legenda="Remessas a caminho" tom="transito" href="/remessas" />
+                <Etiqueta compacta valor={contar(d?.pedidos, (p) => p.solicitante_id === b.id)} legenda="Pedidos abertos" tom="info" href="/pedidos" />
+                <Etiqueta compacta valor={nDiv} legenda="Divergências pendentes" tom={nDiv ? 'alerta' : 'ok'} href="/divergencias" />
               </div>
               {chegando.length > 0 && (
                 <div className="lista">
@@ -210,9 +198,9 @@ function VisaoGeral() {
     <section className="pilha">
       <h2>Visão geral</h2>
       <div className="grade-cartoes">
-        <Etiqueta valor={d?.transito ?? '…'} legenda="Remessas em trânsito" tom="transito" para="/remessas" />
-        <Etiqueta valor={d?.divergencias ?? '…'} legenda="Divergências abertas" tom={d?.divergencias ? 'alerta' : 'ok'} para="/divergencias" />
-        <Etiqueta valor="→" legenda="Painel da gestão" para="/painel" />
+        <Etiqueta valor={d?.transito ?? '…'} legenda="Remessas em trânsito" tom="transito" href="/remessas" />
+        <Etiqueta valor={d?.divergencias ?? '…'} legenda="Divergências abertas" tom={d?.divergencias ? 'alerta' : 'ok'} href="/divergencias" />
+        <Etiqueta valor="→" legenda="Painel da gestão" href="/painel" />
       </div>
     </section>
   )

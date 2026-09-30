@@ -1,8 +1,9 @@
-# SIA — Sistema Integrado de Almoxarifado
+# Warefly — Gestão de almoxarifado (antes SIA)
 ## Plano de implementação (MVP)
 
 > Controle de almoxarifado descentralizado · Depósito 211 e bases
 > Versão 1.2 · 28/09/2026 · Status: aguardando validação
+> 30/09/2026: o produto passou a se chamar Warefly e a seguir o design system em `design-system/` (seção 9).
 
 ---
 
@@ -438,37 +439,40 @@ Modelo de planilha com `codigo_sap` e `quantidade`, uma planilha por almoxarifad
 
 ## 9. Identidade visual
 
-**Nome:** SIA — Sistema Integrado de Almoxarifado. Nome descritivo, de uso interno. O "integrado" se refere à ligação entre o 211 e as bases, que passam a operar num controle único; não há integração com o SAP (ver seção 2).
+**Nome:** Warefly — Gestão de almoxarifado, desde 30/09/2026. Até então, SIA — Sistema Integrado de Almoxarifado.
 
-**Estilo:** industrial utilitário, inspirado em sinalização de almoxarifado e canteiro (etiqueta de prateleira, fita de demarcação, placa).
+**Fonte da verdade:** o design system em `design-system/`. Os tokens ficam em `design-system/tokens/*.css` e o app os importa direto; os fundamentos (conteúdo, visual, iconografia) estão em `design-system/README.md`. Esta seção só resume.
 
-**Marca:** a sigla SIA em Barlow 600, acompanhada de um símbolo de tronco vertical que se divide em três ramos terminando em pontos, na cor cobre (o 211 distribuindo para as bases). A sigla cabe em qualquer tela, inclusive no cabeçalho do celular. O nome por extenso aparece como subtítulo no login e no rodapé do menu lateral.
+**Estilo:** moderno e limpo. Superfícies brancas sobre fundo névoa, bordas finas, muito respiro. Legível no galpão e no celular, sem enfeite nem animação.
+
+**Marca:** símbolo de asa com três penas em arco ascendente (azul voo e asa), ao lado de "Warefly" em Barlow 600. "Gestão de almoxarifado" aparece como subtítulo no login, na guia impressa e no rodapé do menu lateral.
 
 ### Cores base
 
 | Token | Nome | Hex | Uso |
 |---|---|---|---|
-| `--cor-marca` | Cobre | `#B5582A` | Marca, ação principal |
-| `--cor-estrutura` | Grafite | `#1D2127` | Menu, títulos |
-| `--cor-neutra` | Aço | `#6B7785` | Bordas, ícones, texto secundário |
-| `--cor-fundo` | Papel | `#F4F0E8` | Fundo |
+| `--cor-marca` | Azul voo | `#1E66C9` | Marca, ação principal, foco, dado em destaque |
+| `--cor-asa` | Asa | `#5B9CF0` | Segunda pena do símbolo, realces |
+| `--cor-estrutura` | Marinho | `#0B2447` | Títulos, logotipo |
+| `--cor-neutra` | Cinza | `#74808F` | Bordas, texto secundário |
+| `--cor-fundo` | Névoa | `#F3F6FA` | Fundo |
 
 ### Cores de status
 
 | Status | Cor | Fundo do badge | Texto do badge |
 |---|---|---|---|
-| Solicitado / aprovado | `#3A6EA5` | `#E3ECF6` | `#2B5584` |
+| Solicitado / aprovado | `#0E8AA8` | `#DFF3F7` | `#0A6780` |
 | Em trânsito | `#D49A1C` | `#FBF0D9` | `#8A6310` |
-| Encerrado / recebido | `#2E8B57` | `#E0F1E7` | `#1F6B41` |
+| Encerrado | `#2F9E62` | `#E1F5E9` | `#1D7446` |
 | Com divergência | `#B3263E` | `#F7E0E4` | `#8E1D31` |
-| Rascunho / cancelado | `#6B7785` | `#ECEEF0` | `#4A5561` |
+| Rascunho / cancelado | `#76838A` | `#ECEFF0` | `#4B575D` |
 
 Status nunca é comunicado só por cor: todo badge tem texto.
 
 ### Tipografia
 
-- **Barlow** (Google Fonts), pesos 400, 500 e 600: interface e títulos.
-- **IBM Plex Mono** (Google Fonts), peso 400: códigos SAP, números de documento e quantidades, com `font-variant-numeric: tabular-nums` para alinhar colunas.
+- **Barlow** (Google Fonts), pesos 400, 500 e 600: interface, títulos e números dos indicadores (tabulares).
+- **IBM Plex Mono** (Google Fonts), peso 400: códigos SAP, números de documento e quantidades em tabela, com `font-variant-numeric: tabular-nums` para alinhar colunas.
 
 ### Tom dos textos
 
@@ -581,7 +585,7 @@ Usuários são criados pelo admin no painel do Supabase; o app só vincula perfi
 - **Um passo por vez.** Parar ao fim de cada passo para validação.
 - **Não refatorar nada fora do escopo do passo.**
 - **Toda escrita que muda estado passa pelas RPCs.** Nunca inserir em `movimentacoes` pelo cliente.
-- **Usar apenas os tokens da seção 9.** Não inventar cores.
+- **Usar apenas os tokens do design system** (`design-system/tokens`, resumidos na seção 9). Não inventar cores; `npm run lint` avisa cor ou px soltos no código.
 - Textos da interface e mensagens de commit em **português (BR)**.
 - Comandos de terminal em **PowerShell** (Windows).
 

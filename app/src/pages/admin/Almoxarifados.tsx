@@ -59,6 +59,7 @@ export function AdminAlmoxarifados() {
     <div className="pilha">
       <PaginaTopo
         titulo="Almoxarifados"
+        trilha={['Cadastros', 'Almoxarifados']}
         sub="O 3256 é externo e não opera o sistema. Novas bases ficam sob um almoxarifado regional."
         acoes={
           <button
