@@ -153,6 +153,16 @@ export const IcMotivos = () => (
   </Icone>
 )
 
+/** Equipes: duas pessoas. */
+export const IcEquipes = () => (
+  <Icone>
+    <circle cx="9" cy="8" r="3.5" />
+    <path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
+    <path d="M16 4.6a3.5 3.5 0 0 1 0 6.8" />
+    <path d="M18 14.2a6.5 6.5 0 0 1 3.5 5.8" />
+  </Icone>
+)
+
 /** Seta de abrir e fechar grupo: aponta para baixo; o CSS gira quando recolhido. */
 export const IcSeta = () => (
   <Icone>

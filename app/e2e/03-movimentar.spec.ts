@@ -17,6 +17,29 @@ async function saldo(page: Page, almox: string, codigo: string) {
   return page.getByRole('row', { name: new RegExp(codigo) })
 }
 
+test('supervisor cadastra as equipes das próprias bases', async ({ page }) => {
+  await entrar(page, 'victor')
+  await page.getByRole('link', { name: 'Equipes', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'Equipes', level: 1 })).toBeVisible()
+  const bases = await page.getByLabel('Base').locator('option').allTextContents()
+  expect(bases).toEqual(['CRC · Coroaci', 'ITB · Itabirinha', 'MNT · Mantena'])
+
+  await page.getByLabel('Base').selectOption({ label: 'MNT · Mantena' })
+  for (const nome of ['Equipe 12', 'Equipe 15']) {
+    await page.getByLabel('Nova equipe').fill(nome)
+    await page.getByRole('button', { name: 'Cadastrar equipe' }).click()
+    await expect(page.getByText(`Equipe "${nome}" cadastrada em Mantena.`)).toBeVisible()
+  }
+  await page.getByLabel('Nova equipe').fill('equipe 12')
+  await page.getByRole('button', { name: 'Cadastrar equipe' }).click()
+  await expect(page.getByText('Já existe uma equipe "equipe 12" em Mantena.')).toBeVisible()
+
+  await page.getByLabel('Base').selectOption({ label: 'ITB · Itabirinha' })
+  await page.getByLabel('Nova equipe').fill('Equipe 7')
+  await page.getByRole('button', { name: 'Cadastrar equipe' }).click()
+  await expect(page.getByText('Equipe "Equipe 7" cadastrada em Itabirinha.')).toBeVisible()
+})
+
 test('saída da base: bloqueia acima do saldo e exige justificativa de perda', async ({ page }) => {
   await entrar(page, 'victor')
   await page.getByRole('link', { name: 'Movimentar', exact: true }).click()
