@@ -150,5 +150,32 @@ select lives_ok($$ update unidades set sigla_sap = 'X' where codigo = 'PR' $$, '
 reset role;
 select is((select sigla_sap from unidades where codigo = 'PR'), null, '...e nada muda');
 
+-- ---------------------------------------------------------------------
+-- E. Motivos de redução: todos leem; gestora e admin mantêm
+-- ---------------------------------------------------------------------
+select tests.como('VICTOR');
+select is((select array_agg(descricao order by ordem) from motivos_reducao),
+  array['Sem saldo no 211', 'Excede consumo histórico', 'Material de obras', 'Outro'],
+  'todos leem os motivos, na ordem');
+select throws_ok($$ insert into motivos_reducao (descricao) values ('Supervisor inventou') $$,
+  '42501', null, 'supervisor não cadastra motivo');
+select lives_ok($$ update motivos_reducao set ativo = false where descricao = 'Outro' $$, 'supervisor tenta inativar...');
+reset role;
+select ok((select ativo from motivos_reducao where descricao = 'Outro'), '...e nada muda');
+select ok((select exige_texto from motivos_reducao where descricao = 'Outro'), '"Outro" exige texto');
+
+select tests.como('GESTORA');
+select lives_ok($$ insert into motivos_reducao (descricao, ordem) values ('Pedido em duplicidade', 50) $$, 'gestora cadastra motivo');
+select lives_ok($$ update motivos_reducao set ativo = false where descricao = 'Pedido em duplicidade' $$, 'gestora inativa motivo');
+select throws_ok($$ insert into motivos_reducao (descricao) values ('outro') $$, '23505', null, 'nome repetido, mesmo com outra caixa');
+select throws_ok($$ insert into motivos_reducao (descricao) values (' Outro motivo') $$, '23514', null, 'nome com espaço sobrando é recusado');
+select throws_ok($$ delete from motivos_reducao where descricao = 'Pedido em duplicidade' $$, '42501', null, 'motivo não é apagado');
+reset role;
+select ok(not (select ativo from motivos_reducao where descricao = 'Pedido em duplicidade'), 'motivo inativado');
+
+select tests.como('ADMIN');
+select lives_ok($$ insert into motivos_reducao (descricao, ordem) values ('Material descontinuado', 50) $$, 'admin cadastra motivo');
+reset role;
+
 select * from finish();
 rollback;

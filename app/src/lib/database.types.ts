@@ -325,6 +325,30 @@ export type Database = {
           },
         ]
       }
+      motivos_reducao: {
+        Row: {
+          ativo: boolean
+          descricao: string
+          exige_texto: boolean
+          id: number
+          ordem: number
+        }
+        Insert: {
+          ativo?: boolean
+          descricao: string
+          exige_texto?: boolean
+          id?: never
+          ordem?: number
+        }
+        Update: {
+          ativo?: boolean
+          descricao?: string
+          exige_texto?: boolean
+          id?: never
+          ordem?: number
+        }
+        Relationships: []
+      }
       movimentacoes: {
         Row: {
           ajuste_id: string | null
