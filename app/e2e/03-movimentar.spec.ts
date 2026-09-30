@@ -90,8 +90,15 @@ test('devolução ao 211, conferida pelo 211', async ({ page }) => {
   await expect(page.locator('.badge', { hasText: 'Encerrada' }).first()).toBeVisible()
 })
 
-test('ajuste de inventário mostra a diferença e exige justificativa', async ({ page }) => {
+test('ajuste de inventário: só a gestão ajusta, mostra a diferença e exige justificativa', async ({ page }) => {
   await entrar(page, 'victor')
+  await page.getByRole('link', { name: 'Movimentar', exact: true }).click()
+  await expect(page.getByRole('link', { name: /Ajuste de inventário/ })).toHaveCount(0)
+  await page.goto('/movimentar/ajuste')
+  await expect(page.getByText('Ajuste de estoque é feito pela gestão do almoxarifado ou pelo administrador.')).toBeVisible()
+  await sair(page)
+
+  await entrar(page, 'carlos')
   await page.goto('/movimentar/ajuste')
   await page.getByLabel('Almoxarifado').selectOption({ label: 'MNT · Mantena' })
   await adicionarItem(page, '900001', '14', 'Contado')

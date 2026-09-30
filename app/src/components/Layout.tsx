@@ -29,7 +29,7 @@ type ItemMenu = { para: string; rotulo: string; grupo: string; icone: ReactNode;
 /** Itens de navegação conforme papel e atribuições. */
 // eslint-disable-next-line react-refresh/only-export-components
 export function useMenu(): ItemMenu[] {
-  const { ehAdmin, veTudo, almoxResponsavel, almoxVisiveis } = useSessao()
+  const { ehAdmin, veTudo, almoxResponsavel, almoxVisiveis, almoxGeridos } = useSessao()
   const opera = almoxResponsavel.length > 0
   const operaBase = almoxResponsavel.some((a) => a.tipo === 'base')
   const operaRegional = almoxResponsavel.some((a) => a.tipo === 'regional')
@@ -42,7 +42,7 @@ export function useMenu(): ItemMenu[] {
     itens.push({ para: '/remessas', rotulo: 'Remessas', grupo: 'Operação', icone: <IcRemessas />, principal: true })
     itens.push({ para: '/divergencias', rotulo: 'Divergências', grupo: 'Operação', icone: <IcDivergencias /> })
   }
-  if (opera) itens.push({ para: '/movimentar', rotulo: 'Movimentar', grupo: 'Operação', icone: <IcMovimentar /> })
+  if (opera || almoxGeridos.length > 0) itens.push({ para: '/movimentar', rotulo: 'Movimentar', grupo: 'Operação', icone: <IcMovimentar /> })
   if (operaRegional) itens.push({ para: '/entradas', rotulo: 'Entradas do 3256', grupo: 'Operação', icone: <IcEntradas /> })
   if (operaBase && !operaRegional) itens.push({ para: '/movimentar/saida', rotulo: 'Registrar saída', grupo: 'Operação', icone: <IcSaida /> })
   if (ve) itens.push({ para: '/historico', rotulo: 'Histórico', grupo: 'Operação', icone: <IcHistorico /> })

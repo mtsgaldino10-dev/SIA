@@ -30,14 +30,19 @@ function useSaldos(almoxId: string, versao = 0) {
 }
 
 export function Movimentar() {
-  const { almoxResponsavel } = useSessao()
+  const { almoxResponsavel, almoxGeridos } = useSessao()
   const operaBase = almoxResponsavel.some((a) => a.tipo === 'base')
-  if (!almoxResponsavel.length) return <Vazio>Você não é responsável por nenhum almoxarifado.</Vazio>
+  if (!almoxResponsavel.length && !almoxGeridos.length) return <Vazio>Você não é responsável por nenhum almoxarifado.</Vazio>
   const opcoes = [
-    { para: '/movimentar/saida', titulo: 'Registrar saída', texto: 'Aplicação em serviço, perda ou avaria.', mostrar: true },
+    { para: '/movimentar/saida', titulo: 'Registrar saída', texto: 'Aplicação em serviço, perda ou avaria.', mostrar: almoxResponsavel.length > 0 },
     { para: '/movimentar/transferencia', titulo: 'Transferir entre bases', texto: 'Só entre bases do mesmo supervisor.', mostrar: operaBase },
     { para: '/movimentar/devolucao', titulo: 'Devolver ao 211', texto: 'Material que volta ao almoxarifado regional.', mostrar: operaBase },
-    { para: '/movimentar/ajuste', titulo: 'Ajuste de inventário', texto: 'Contagem física contra o saldo, com justificativa.', mostrar: true },
+    {
+      para: '/movimentar/ajuste',
+      titulo: 'Ajuste de inventário',
+      texto: 'Contagem física contra o saldo, com justificativa. Só a gestão do almoxarifado e o administrador.',
+      mostrar: almoxGeridos.length > 0,
+    },
   ]
   return (
     <div className="pilha">
@@ -248,9 +253,9 @@ export function RemessaAvulsa({ tipo }: { tipo: 'transferencia' | 'devolucao' })
 type LinhaAjuste = { material_id: string; contado: string }
 
 export function Ajuste() {
-  const { almoxResponsavel } = useSessao()
+  const { almoxGeridos } = useSessao()
   const { material, aceitaFracao } = useCatalogo()
-  const [almoxId, setAlmoxId] = useState(almoxResponsavel.find((a) => a.tipo === 'base')?.id ?? almoxResponsavel[0]?.id ?? '')
+  const [almoxId, setAlmoxId] = useState(almoxGeridos.find((a) => a.tipo === 'base')?.id ?? almoxGeridos[0]?.id ?? '')
   const [versao, setVersao] = useState(0)
   const saldos = useSaldos(almoxId, versao)
   const [linhas, setLinhas] = useState<LinhaAjuste[]>([])
@@ -261,7 +266,7 @@ export function Ajuste() {
   const [ocupado, setOcupado] = useState(false)
   const [idRegistro, setIdRegistro] = useState(() => crypto.randomUUID())
 
-  if (!almoxResponsavel.length) return <Vazio>Você não é responsável por nenhum almoxarifado.</Vazio>
+  if (!almoxGeridos.length) return <Vazio>Ajuste de estoque é feito pela gestão do almoxarifado ou pelo administrador.</Vazio>
 
   async function registrar() {
     setErro(null)
@@ -302,7 +307,7 @@ export function Ajuste() {
       />
       <div className="cartao pilha">
         <div className="grade-2">
-          <SeletorAlmox valor={almoxId} onChange={setAlmoxId} opcoes={almoxResponsavel} />
+          <SeletorAlmox valor={almoxId} onChange={setAlmoxId} opcoes={almoxGeridos} />
           <Campo rotulo="Data da contagem">
             <input type="date" max={hojeISO()} value={data} onChange={(e) => setData(e.target.value)} />
           </Campo>
