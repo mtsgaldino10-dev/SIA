@@ -4,6 +4,7 @@
 > Controle de almoxarifado descentralizado · Depósito 211 e bases
 > Versão 1.2 · 28/09/2026 · Status: aguardando validação
 > 30/09/2026: o produto passou a se chamar Warefly e a seguir o design system em `design-system/` (seção 9).
+> 30/09/2026: nova rodada (reservas CEMIG, solicitações, inventário) especificada em `docs/superpowers/specs/2026-09-30-warefly-reservas-solicitacoes-inventario-design.md`, que prevalece sobre este plano onde divergir.
 
 ---
 
@@ -77,11 +78,11 @@ Hoje cada supervisor recebe as duas funções nas suas bases. Quando houver resp
 | Registrar recebimento | Responsável do almox de destino |
 | Registrar "chegou depois" em divergência | Responsável do almox de destino |
 | Tratar divergência (reenvio, baixa, ajuste) | Responsável do almox de origem |
-| Registrar saída da base | Responsável da base |
+| Registrar saída da base | Responsável da base, com equipe e quem retirou na aplicação em serviço |
 | Transferir entre bases | Responsável da origem; origem e destino precisam ter o mesmo supervisor |
 | Devolver material ao 211 | Responsável da base |
 | Pedido externo ao 3256 e entrada avulsa | Responsável do 211 |
-| Ajuste de inventário | Responsável do almox, com justificativa obrigatória |
+| Ajuste de inventário | Gestão do almoxarifado (responsável do regional) ou admin, com justificativa obrigatória |
 | Cadastros, usuários e atribuições | Admin |
 | Visualizar | Responsável e supervisor: seus almox · Responsável do 211: 211 e todas as bases · Gestão e admin: tudo |
 

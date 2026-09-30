@@ -9,7 +9,7 @@ O sistema se chamava **SIA** (Sistema Integrado de Almoxarifado) até 30/09/2026
 | Pasta | Conteúdo |
 |---|---|
 | `supabase/migrations` | Banco: enums, tabelas, views, RLS, RPCs, storage e indicadores (fases 1 e 5) |
-| `supabase/tests/database` | Testes pgTAP que simulam cada papel (192 verificações) |
+| `supabase/tests/database` | Testes pgTAP que simulam cada papel (262 verificações) |
 | `app/` | App React + Vite + TypeScript (fases 2 a 5) |
 | `app/e2e` | Testes ponta a ponta (Playwright) contra o Supabase local |
 | `design-system/` | Design system Warefly: tokens (usados pelo app), fontes, componentes de referência, UI kits e lint de aderência ([README](design-system/README.md)) |
@@ -42,7 +42,7 @@ Para o modo local, crie `app/.env.local-e2e` com `VITE_SUPABASE_URL=http://127.0
 ## Testes
 
 ```powershell
-supabase test db               # pgTAP no banco local (192 verificações)
+supabase test db               # pgTAP no banco local (262 verificações)
 cd app
 npm test                       # testes unitários (Vitest)
 npx tsc -b                     # checagem de tipos
@@ -73,7 +73,7 @@ Detalhes, triagem do export e pendências em [design-system/README.md](design-sy
 supabase db push --db-url "postgresql://postgres.<ref>:<senha>@aws-0-sa-east-1.pooler.supabase.com:5432/postgres"
 ```
 
-As 8 migrations já foram aplicadas no projeto `hkfbypwkjvhuuwbijlwy` em 28/09/2026.
+As 8 primeiras migrations foram aplicadas no projeto `hkfbypwkjvhuuwbijlwy` em 28/09/2026. As da nova rodada (a partir de `20261001100000`) ainda não.
 
 ## Publicar o app
 
@@ -92,8 +92,9 @@ Depois de publicar, cadastre a URL em **Authentication → URL Configuration** n
    update perfis set papel = 'admin' where email = 'seu-email@empresa.com';
    ```
 3. No app, como admin:
-   - **Usuários e atribuições**: marque as bases de cada supervisor com "Responsável e supervisor" e dê "Responsável" no 211 a quem opera o 211. Papel `gestao` para quem só acompanha.
+   - **Usuários e atribuições**: marque as bases de cada supervisor com "Responsável e supervisor" e dê "Responsável" no 211 à gestão do almoxarifado (aprova, entrega, ajusta o estoque e inventaria). Papel "Gerência" (`gestao`) para quem só acompanha.
    - **Unidades**: confira a lista (já vem com as 10 unidades da planilha: PC, CJ, PR, JG, RL, US, CT, M, KG, M3).
+   - **Equipes**: cadastre as equipes de cada base (o supervisor também pode). A saída de aplicação em serviço exige equipe e o nome de quem retirou.
    - **Materiais → Importar planilha**: envie o `ALMOXARIF 211.xlsx`. O cabeçalho é detectado sozinho (código, descrição, unidade e preço).
 4. **Dia D**: após a contagem, em **Saldo inicial**, importe uma planilha por almoxarifado (`codigo_sap`, `quantidade`; o botão "Baixar modelo" gera o arquivo).
 5. Acompanhe as duas primeiras semanas pelo **Painel da gestão** (divergências e ajustes).
@@ -106,3 +107,5 @@ Depois de publicar, cadastre a URL em **Authentication → URL Configuration** n
 - Quem registra o envio não registra o recebimento, exceto entre bases do mesmo supervisor.
 - Recebimento exige foto da guia assinada e o nome de quem contou.
 - Divergência só fecha com tratamento justificado.
+- Ajuste de estoque e saldo inicial só pela gestão do almoxarifado (responsável do regional) ou pelo administrador.
+- Saída de aplicação em serviço numa base registra a equipe e quem retirou.
