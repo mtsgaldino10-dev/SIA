@@ -64,9 +64,8 @@ test('outro supervisor não transfere para as bases do Victor', async ({ page })
   await entrar(page, 'vinicius')
   await page.goto('/movimentar/transferencia')
   await page.getByLabel('Origem').selectOption({ label: 'RSP · Resplendor' })
-  await expect(page.getByLabel('Destino').locator('option')).toHaveCount(1)
-  const destinos = await page.getByLabel('Destino').locator('option').allTextContents()
-  expect(destinos).toEqual(['AIM · Aimorés'])
+  // A lista de Aimorés (origem inicial) também tem uma opção: espera o texto, não a contagem.
+  await expect(page.getByLabel('Destino').locator('option')).toHaveText(['AIM · Aimorés'])
 })
 
 test('devolução ao 211, conferida pelo 211', async ({ page }) => {
