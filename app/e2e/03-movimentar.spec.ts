@@ -49,9 +49,16 @@ test('saída da base: exige equipe e quem retirou, bloqueia acima do saldo e exi
   await page.getByRole('button', { name: 'Registrar saída' }).click()
   await expect(page.getByText('Informe a equipe que retirou o material.')).toBeVisible()
 
-  // Trocar de base limpa a equipe escolhida
+  // Trocar de base limpa a equipe escolhida e, enquanto as equipes da nova base
+  // carregam (rede lenta), as da base anterior não ficam na lista
   await page.getByLabel('Equipe').selectOption({ label: 'Equipe 12' })
+  await page.route('**/rest/v1/equipes*', async (route) => {
+    await new Promise((ok) => setTimeout(ok, 1500))
+    await route.continue()
+  })
   await page.getByLabel('Almoxarifado').selectOption({ label: 'ITB · Itabirinha' })
+  expect(await page.getByLabel('Equipe').locator('option').allTextContents()).not.toContain('Equipe 12')
+  await page.unroute('**/rest/v1/equipes*')
   await expect(page.getByLabel('Equipe')).toHaveValue('')
   await page.getByLabel('Almoxarifado').selectOption({ label: 'MNT · Mantena' })
   await expect(page.getByLabel('Equipe')).toHaveValue('')

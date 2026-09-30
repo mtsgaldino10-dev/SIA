@@ -31,20 +31,28 @@ function useSaldos(almoxId: string, versao = 0) {
   return saldos
 }
 
-/** Equipes ativas que podem retirar num almoxarifado: as da base, ou as das bases de um regional. */
+/**
+ * Equipes ativas que podem retirar num almoxarifado: as da base, ou as das bases de um regional.
+ * Devolve null enquanto a lista do almoxarifado atual não chegou: logo depois de trocar de
+ * almoxarifado, os dados ainda são do anterior e não podem aparecer para escolha.
+ */
 function useEquipes(local: Almox | undefined, almoxarifados: Almox[]) {
   const ids = !local
     ? []
     : local.tipo === 'base'
       ? [local.id]
       : almoxarifados.filter((a) => a.pai_id === local.id).map((a) => a.id)
-  return useConsulta(
-    () =>
-      ids.length
-        ? listaOuErro(supabase.from('equipes').select('id, nome, almox_id').eq('ativa', true).in('almox_id', ids).order('nome'))
-        : Promise.resolve([]),
-    [ids.join()],
+  const chave = ids.join()
+  const consulta = useConsulta(
+    async () => ({
+      chave,
+      lista: ids.length
+        ? await listaOuErro(supabase.from('equipes').select('id, nome, almox_id').eq('ativa', true).in('almox_id', ids).order('nome'))
+        : [],
+    }),
+    [chave],
   )
+  return consulta.dados?.chave === chave ? consulta.dados.lista : null
 }
 
 export function Movimentar() {
@@ -171,7 +179,7 @@ export function Saida() {
           <Campo rotulo="Equipe" ajuda={exigeQuem ? 'Obrigatória na aplicação em serviço.' : 'Opcional.'}>
             <select value={equipeId} onChange={(e) => setEquipeId(e.target.value)}>
               <option value="">{exigeQuem ? 'Escolha a equipe' : 'Nenhuma'}</option>
-              {(equipes.dados ?? []).map((q) => (
+              {(equipes ?? []).map((q) => (
                 <option key={q.id} value={q.id}>
                   {ehBase ? q.nome : `${q.nome} · ${almox(q.almox_id)?.codigo ?? ''}`}
                 </option>
@@ -185,7 +193,7 @@ export function Saida() {
             <input value={observacao} onChange={(e) => setObservacao(e.target.value)} />
           </Campo>
         </div>
-        {ehBase && equipes.dados && equipes.dados.length === 0 && (
+        {ehBase && equipes && equipes.length === 0 && (
           <Aviso tipo="atencao">
             Nenhuma equipe ativa em {atual?.nome}. <Link to={`/cadastros/equipes?base=${almoxId}`}>Cadastre as equipes</Link> antes de
             registrar aplicação em serviço.
