@@ -1,4 +1,4 @@
-Botão do SIA — rótulo sempre com verbo; um primário por região.
+Botão do Warefly — rótulo sempre com verbo; um primário por região.
 ```jsx
 <Botao onClick={enviar}>Enviar pedido</Botao>
 <Botao variante="secundario">Salvar itens</Botao>

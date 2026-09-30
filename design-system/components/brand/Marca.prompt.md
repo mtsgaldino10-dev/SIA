@@ -1,4 +1,4 @@
-Marca SIA (símbolo + sigla); use no topo do menu lateral, cabeçalho móvel, login e guia impressa.
+Marca Warefly (símbolo + nome); use no topo do menu lateral, cabeçalho móvel, login e guia impressa.
 ```jsx
 <Marca comNome cor="var(--cor-estrutura)" />
 ```

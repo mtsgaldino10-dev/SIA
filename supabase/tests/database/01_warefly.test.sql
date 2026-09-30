@@ -1,5 +1,5 @@
 -- =====================================================================
--- SIA · Passo 1.7 — Teste simulando cada papel (via request.jwt.claims)
+-- Warefly · Passo 1.7 — Teste simulando cada papel (via request.jwt.claims)
 -- Roda com: supabase test db   (tudo em transação, desfeito no fim)
 -- =====================================================================
 begin;
@@ -84,7 +84,7 @@ grant execute on all functions in schema tests to authenticated, anon;
 -- Dados: usuários (o trigger cria os perfis), papéis, atribuições, materiais
 -- ---------------------------------------------------------------------
 insert into auth.users (id, email, raw_user_meta_data, aud, role)
-select tests.u(n), lower(n) || '@sia.test', json_build_object('nome', nome)::jsonb, 'authenticated', 'authenticated'
+select tests.u(n), lower(n) || '@warefly.test', json_build_object('nome', nome)::jsonb, 'authenticated', 'authenticated'
   from (values ('ADMIN', 'Admin'), ('GESTAO', 'Gestão'), ('C211', 'Carlos 211'),
                ('VINI', 'Vinícius'), ('VICTOR', 'Victor'), ('OPER', 'Operador')) as v (n, nome);
 

@@ -2,7 +2,7 @@
 
 Controle do almoxarifado regional **211** e das **11 bases**, em paralelo ao SAP e sem integração com ele. Registra o que cada base pediu, o que foi enviado e o que de fato chegou.
 
-O sistema se chamava **SIA** (Sistema Integrado de Almoxarifado) até 30/09/2026. O repositório, a pasta do projeto, o projeto Supabase e o plano mantêm o nome antigo. O plano completo está em [SIA_PLANO_IMPLEMENTAÇÃO.MD](SIA_PLANO_IMPLEMENTAÇÃO.MD).
+O sistema se chamava **SIA** (Sistema Integrado de Almoxarifado) até 30/09/2026. As migrations aplicadas antes da troca mantêm "SIA" nos comentários, como registro do que rodou no banco. O plano completo está em [WAREFLY_PLANO_IMPLEMENTAÇÃO.MD](WAREFLY_PLANO_IMPLEMENTAÇÃO.MD).
 
 ## Estrutura
 

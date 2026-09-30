@@ -1,4 +1,4 @@
-const K = window.SIADesignSystem_ad870b;
+const K = window.WareflyDesignSystem_ad870b;
 function ImportarMateriais() {
   const { PaginaTopo, Cartao, Campo, Selecao, Botao, StatusBadge, Tabela, Aviso } = K;
   const [etapa, setEtapa] = React.useState(0);

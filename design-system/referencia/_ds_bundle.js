@@ -1,8 +1,8 @@
-/* @ds-bundle: {"format":4,"namespace":"SIADesignSystem_ad870b","components":[{"name":"Marca","sourcePath":"components/brand/Marca.jsx"},{"name":"Simbolo","sourcePath":"components/brand/Simbolo.jsx"},{"name":"Donut","sourcePath":"components/charts/Donut.jsx"},{"name":"GraficoLinha","sourcePath":"components/charts/GraficoLinha.jsx"},{"name":"Sparkline","sourcePath":"components/charts/Sparkline.jsx"},{"name":"Dados","sourcePath":"components/data/Dados.jsx"},{"name":"Doc","sourcePath":"components/data/Doc.jsx"},{"name":"Etiqueta","sourcePath":"components/data/Etiqueta.jsx"},{"name":"ItemLista","sourcePath":"components/data/ItemLista.jsx"},{"name":"Qtd","sourcePath":"components/data/Qtd.jsx"},{"name":"Tabela","sourcePath":"components/data/Tabela.jsx"},{"name":"Aviso","sourcePath":"components/feedback/Aviso.jsx"},{"name":"Carregando","sourcePath":"components/feedback/Carregando.jsx"},{"name":"Fita","sourcePath":"components/feedback/Fita.jsx"},{"name":"StatusBadge","sourcePath":"components/feedback/StatusBadge.jsx"},{"name":"Vazio","sourcePath":"components/feedback/Vazio.jsx"},{"name":"Abas","sourcePath":"components/forms/Abas.jsx"},{"name":"Botao","sourcePath":"components/forms/Botao.jsx"},{"name":"Campo","sourcePath":"components/forms/Campo.jsx"},{"name":"Entrada","sourcePath":"components/forms/Entrada.jsx"},{"name":"MaterialBusca","sourcePath":"components/forms/MaterialBusca.jsx"},{"name":"Selecao","sourcePath":"components/forms/Selecao.jsx"},{"name":"CabecalhoMovel","sourcePath":"components/layout/BarraInferior.jsx"},{"name":"BarraInferior","sourcePath":"components/layout/BarraInferior.jsx"},{"name":"Breadcrumb","sourcePath":"components/layout/Breadcrumb.jsx"},{"name":"BuscaComando","sourcePath":"components/layout/BuscaComando.jsx"},{"name":"Cartao","sourcePath":"components/layout/Cartao.jsx"},{"name":"MenuLateral","sourcePath":"components/layout/MenuLateral.jsx"},{"name":"PaginaTopo","sourcePath":"components/layout/PaginaTopo.jsx"}],"sourceHashes":{"components/brand/Marca.jsx":"e940d200fb4b","components/brand/Simbolo.jsx":"bc8767e0c529","components/charts/Donut.jsx":"9415823f58af","components/charts/GraficoLinha.jsx":"c019ff005480","components/charts/Sparkline.jsx":"fd358a557885","components/data/Dados.jsx":"8e412980a6fa","components/data/Doc.jsx":"ae8a5ab08af6","components/data/Etiqueta.jsx":"38cd83fffdc1","components/data/ItemLista.jsx":"660b617d760a","components/data/Qtd.jsx":"2cd5a6ac4666","components/data/Tabela.jsx":"28a224f6dd6c","components/feedback/Aviso.jsx":"9c0181e98375","components/feedback/Carregando.jsx":"e02735b1b81e","components/feedback/Fita.jsx":"7775b0a75f64","components/feedback/StatusBadge.jsx":"889afb1340f3","components/feedback/Vazio.jsx":"0d035c5c82bd","components/forms/Abas.jsx":"f35fdb849939","components/forms/Botao.jsx":"b9fe4fa46afa","components/forms/Campo.jsx":"bbb8cf18fa72","components/forms/Entrada.jsx":"3ee305b47217","components/forms/MaterialBusca.jsx":"e09d944f4fef","components/forms/Selecao.jsx":"3e758c6623e5","components/layout/BarraInferior.jsx":"111baa48ecdc","components/layout/Breadcrumb.jsx":"30a265357981","components/layout/BuscaComando.jsx":"4fd3f8f84532","components/layout/Cartao.jsx":"e1adc3f3c7c6","components/layout/MenuLateral.jsx":"f63c7530866d","components/layout/PaginaTopo.jsx":"eeacd5140d47","ui_kits/sia-movel/Movel.jsx":"aef13d66f818","ui_kits/sia-web/Cadastros.jsx":"a07721cc174e","ui_kits/sia-web/Guia.jsx":"02a4977b15dd","ui_kits/sia-web/Operacao.jsx":"2e75e7baa8ad","ui_kits/sia-web/Painel.jsx":"d239fba5b2f2","ui_kits/sia-web/Pedidos.jsx":"cae4e18b244b","ui_kits/sia-web/Shell.jsx":"d82f2363e230","ui_kits/sia-web/dados.js":"a160755a5dbf"},"inlinedExternals":[],"unexposedExports":[{"name":"estiloControle","sourcePath":"components/forms/Entrada.jsx"},{"name":"formatarDoc","sourcePath":"components/data/Doc.jsx"},{"name":"formatarQtd","sourcePath":"components/data/Qtd.jsx"},{"name":"tomStatus","sourcePath":"components/feedback/StatusBadge.jsx"}]} */
+/* @ds-bundle: {"format":4,"namespace":"WareflyDesignSystem_ad870b","components":[{"name":"Marca","sourcePath":"components/brand/Marca.jsx"},{"name":"Simbolo","sourcePath":"components/brand/Simbolo.jsx"},{"name":"Donut","sourcePath":"components/charts/Donut.jsx"},{"name":"GraficoLinha","sourcePath":"components/charts/GraficoLinha.jsx"},{"name":"Sparkline","sourcePath":"components/charts/Sparkline.jsx"},{"name":"Dados","sourcePath":"components/data/Dados.jsx"},{"name":"Doc","sourcePath":"components/data/Doc.jsx"},{"name":"Etiqueta","sourcePath":"components/data/Etiqueta.jsx"},{"name":"ItemLista","sourcePath":"components/data/ItemLista.jsx"},{"name":"Qtd","sourcePath":"components/data/Qtd.jsx"},{"name":"Tabela","sourcePath":"components/data/Tabela.jsx"},{"name":"Aviso","sourcePath":"components/feedback/Aviso.jsx"},{"name":"Carregando","sourcePath":"components/feedback/Carregando.jsx"},{"name":"Fita","sourcePath":"components/feedback/Fita.jsx"},{"name":"StatusBadge","sourcePath":"components/feedback/StatusBadge.jsx"},{"name":"Vazio","sourcePath":"components/feedback/Vazio.jsx"},{"name":"Abas","sourcePath":"components/forms/Abas.jsx"},{"name":"Botao","sourcePath":"components/forms/Botao.jsx"},{"name":"Campo","sourcePath":"components/forms/Campo.jsx"},{"name":"Entrada","sourcePath":"components/forms/Entrada.jsx"},{"name":"MaterialBusca","sourcePath":"components/forms/MaterialBusca.jsx"},{"name":"Selecao","sourcePath":"components/forms/Selecao.jsx"},{"name":"CabecalhoMovel","sourcePath":"components/layout/BarraInferior.jsx"},{"name":"BarraInferior","sourcePath":"components/layout/BarraInferior.jsx"},{"name":"Breadcrumb","sourcePath":"components/layout/Breadcrumb.jsx"},{"name":"BuscaComando","sourcePath":"components/layout/BuscaComando.jsx"},{"name":"Cartao","sourcePath":"components/layout/Cartao.jsx"},{"name":"MenuLateral","sourcePath":"components/layout/MenuLateral.jsx"},{"name":"PaginaTopo","sourcePath":"components/layout/PaginaTopo.jsx"}],"sourceHashes":{"components/brand/Marca.jsx":"e940d200fb4b","components/brand/Simbolo.jsx":"bc8767e0c529","components/charts/Donut.jsx":"9415823f58af","components/charts/GraficoLinha.jsx":"c019ff005480","components/charts/Sparkline.jsx":"fd358a557885","components/data/Dados.jsx":"8e412980a6fa","components/data/Doc.jsx":"ae8a5ab08af6","components/data/Etiqueta.jsx":"38cd83fffdc1","components/data/ItemLista.jsx":"660b617d760a","components/data/Qtd.jsx":"2cd5a6ac4666","components/data/Tabela.jsx":"28a224f6dd6c","components/feedback/Aviso.jsx":"9c0181e98375","components/feedback/Carregando.jsx":"e02735b1b81e","components/feedback/Fita.jsx":"7775b0a75f64","components/feedback/StatusBadge.jsx":"889afb1340f3","components/feedback/Vazio.jsx":"0d035c5c82bd","components/forms/Abas.jsx":"f35fdb849939","components/forms/Botao.jsx":"b9fe4fa46afa","components/forms/Campo.jsx":"bbb8cf18fa72","components/forms/Entrada.jsx":"3ee305b47217","components/forms/MaterialBusca.jsx":"e09d944f4fef","components/forms/Selecao.jsx":"3e758c6623e5","components/layout/BarraInferior.jsx":"111baa48ecdc","components/layout/Breadcrumb.jsx":"30a265357981","components/layout/BuscaComando.jsx":"4fd3f8f84532","components/layout/Cartao.jsx":"e1adc3f3c7c6","components/layout/MenuLateral.jsx":"f63c7530866d","components/layout/PaginaTopo.jsx":"eeacd5140d47","ui_kits/warefly-movel/Movel.jsx":"cc2702e11824","ui_kits/warefly-web/Cadastros.jsx":"9ae30cb531c9","ui_kits/warefly-web/Guia.jsx":"79036c88a72a","ui_kits/warefly-web/Operacao.jsx":"73be04804adf","ui_kits/warefly-web/Painel.jsx":"6bd4164b5b8e","ui_kits/warefly-web/Pedidos.jsx":"8e20567807b0","ui_kits/warefly-web/Shell.jsx":"8cffc2feae96","ui_kits/warefly-web/dados.js":"d8b68d767ea1"},"inlinedExternals":[],"unexposedExports":[{"name":"estiloControle","sourcePath":"components/forms/Entrada.jsx"},{"name":"formatarDoc","sourcePath":"components/data/Doc.jsx"},{"name":"formatarQtd","sourcePath":"components/data/Qtd.jsx"},{"name":"tomStatus","sourcePath":"components/feedback/StatusBadge.jsx"}]} */
 
 (() => {
 
-const __ds_ns = (window.SIADesignSystem_ad870b = window.SIADesignSystem_ad870b || {});
+const __ds_ns = (window.WareflyDesignSystem_ad870b = window.WareflyDesignSystem_ad870b || {});
 
 const __ds_scope = {};
 
@@ -1714,9 +1714,9 @@ function PaginaTopo({
 Object.assign(__ds_scope, { PaginaTopo });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/layout/PaginaTopo.jsx", error: String((e && e.message) || e) }); }
 
-// ui_kits/sia-movel/Movel.jsx
+// ui_kits/warefly-movel/Movel.jsx
 try { (() => {
-const M = window.SIADesignSystem_ad870b;
+const M = window.WareflyDesignSystem_ad870b;
 function InicioBase({
   ir
 }) {
@@ -2047,11 +2047,11 @@ function Feito({
 window.InicioBase = InicioBase;
 window.Receber = Receber;
 window.Feito = Feito;
-})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/sia-movel/Movel.jsx", error: String((e && e.message) || e) }); }
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/warefly-movel/Movel.jsx", error: String((e && e.message) || e) }); }
 
-// ui_kits/sia-web/Cadastros.jsx
+// ui_kits/warefly-web/Cadastros.jsx
 try { (() => {
-const K = window.SIADesignSystem_ad870b;
+const K = window.WareflyDesignSystem_ad870b;
 function ImportarMateriais() {
   const {
     PaginaTopo,
@@ -2272,11 +2272,11 @@ function Login({
 }
 window.ImportarMateriais = ImportarMateriais;
 window.Login = Login;
-})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/sia-web/Cadastros.jsx", error: String((e && e.message) || e) }); }
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/warefly-web/Cadastros.jsx", error: String((e && e.message) || e) }); }
 
-// ui_kits/sia-web/Guia.jsx
+// ui_kits/warefly-web/Guia.jsx
 try { (() => {
-const G = window.SIADesignSystem_ad870b;
+const G = window.WareflyDesignSystem_ad870b;
 function Guia({
   ir
 }) {
@@ -2284,7 +2284,7 @@ function Guia({
     Marca,
     Botao
   } = G;
-  const D = window.SIA_DADOS;
+  const D = window.WAREFLY_DADOS;
   const bd = {
     border: '1px solid #000',
     padding: '6px 8px',
@@ -2471,11 +2471,11 @@ function Guia({
   }, "Data da chegada"))));
 }
 window.Guia = Guia;
-})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/sia-web/Guia.jsx", error: String((e && e.message) || e) }); }
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/warefly-web/Guia.jsx", error: String((e && e.message) || e) }); }
 
-// ui_kits/sia-web/Operacao.jsx
+// ui_kits/warefly-web/Operacao.jsx
 try { (() => {
-const O = window.SIADesignSystem_ad870b;
+const O = window.WareflyDesignSystem_ad870b;
 function Saldo() {
   const {
     PaginaTopo,
@@ -2486,7 +2486,7 @@ function Saldo() {
     Qtd,
     Vazio
   } = O;
-  const D = window.SIA_DADOS;
+  const D = window.WAREFLY_DADOS;
   const [almox, setAlmox] = React.useState('211');
   const [t, setT] = React.useState('');
   const [zer, setZer] = React.useState(false);
@@ -2637,7 +2637,7 @@ function Divergencias() {
     Aviso,
     Qtd
   } = O;
-  const D = window.SIA_DADOS;
+  const D = window.WAREFLY_DADOS;
   const [lista, setLista] = React.useState(D.divergencias);
   const [aberta, setAberta] = React.useState(null);
   const [just, setJust] = React.useState('');
@@ -2776,11 +2776,11 @@ function Divergencias() {
 window.Saldo = Saldo;
 window.Remessas = Remessas;
 window.Divergencias = Divergencias;
-})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/sia-web/Operacao.jsx", error: String((e && e.message) || e) }); }
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/warefly-web/Operacao.jsx", error: String((e && e.message) || e) }); }
 
-// ui_kits/sia-web/Painel.jsx
+// ui_kits/warefly-web/Painel.jsx
 try { (() => {
-const P = window.SIADesignSystem_ad870b;
+const P = window.WareflyDesignSystem_ad870b;
 function Painel({
   ir
 }) {
@@ -2796,7 +2796,7 @@ function Painel({
     StatusBadge,
     Botao
   } = P;
-  const D = window.SIA_DADOS;
+  const D = window.WAREFLY_DADOS;
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PaginaTopo, {
     trilha: ['Início', 'Painel geral'],
     titulo: "Painel do 211",
@@ -3000,11 +3000,11 @@ function Painel({
   })));
 }
 window.Painel = Painel;
-})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/sia-web/Painel.jsx", error: String((e && e.message) || e) }); }
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/warefly-web/Painel.jsx", error: String((e && e.message) || e) }); }
 
-// ui_kits/sia-web/Pedidos.jsx
+// ui_kits/warefly-web/Pedidos.jsx
 try { (() => {
-const PD = window.SIADesignSystem_ad870b;
+const PD = window.WareflyDesignSystem_ad870b;
 function Pedidos({
   ir
 }) {
@@ -3017,7 +3017,7 @@ function Pedidos({
     Botao,
     Vazio
   } = PD;
-  const D = window.SIA_DADOS;
+  const D = window.WAREFLY_DADOS;
   const [aba, setAba] = React.useState('fila');
   const lista = D.pedidos.filter(p => aba === 'fila' ? ['solicitado', 'aprovado'].includes(p.status) : aba === 'abertos' ? !['encerrado', 'cancelado'].includes(p.status) : true);
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(PaginaTopo, {
@@ -3074,7 +3074,7 @@ function PedidoDetalhe({
     Botao,
     Qtd
   } = PD;
-  const D = window.SIA_DADOS;
+  const D = window.WAREFLY_DADOS;
   const [qtds, setQtds] = React.useState(Object.fromEntries(D.itensPedido.map(i => [i.codigo_sap, String(i.aprovada)])));
   const [doc, setDoc] = React.useState('');
   const [erro, setErro] = React.useState(null);
@@ -3182,11 +3182,11 @@ function PedidoDetalhe({
 }
 window.Pedidos = Pedidos;
 window.PedidoDetalhe = PedidoDetalhe;
-})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/sia-web/Pedidos.jsx", error: String((e && e.message) || e) }); }
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/warefly-web/Pedidos.jsx", error: String((e && e.message) || e) }); }
 
-// ui_kits/sia-web/Shell.jsx
+// ui_kits/warefly-web/Shell.jsx
 try { (() => {
-const S = window.SIADesignSystem_ad870b;
+const S = window.WareflyDesignSystem_ad870b;
 function Shell({
   ativo,
   onNavegar,
@@ -3269,11 +3269,11 @@ function Shell({
   }, children)));
 }
 window.Shell = Shell;
-})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/sia-web/Shell.jsx", error: String((e && e.message) || e) }); }
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/warefly-web/Shell.jsx", error: String((e && e.message) || e) }); }
 
-// ui_kits/sia-web/dados.js
+// ui_kits/warefly-web/dados.js
 try { (() => {
-window.SIA_DADOS = {
+window.WAREFLY_DADOS = {
   bases: [{
     id: '211',
     codigo: '211',
@@ -3499,7 +3499,7 @@ window.SIA_DADOS = {
   }],
   dias: ['01/09', '04/09', '07/09', '10/09', '13/09', '16/09', '19/09', '22/09', '25/09', '28/09']
 };
-})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/sia-web/dados.js", error: String((e && e.message) || e) }); }
+})(); } catch (e) { __ds_ns.__errors.push({ path: "ui_kits/warefly-web/dados.js", error: String((e && e.message) || e) }); }
 
 __ds_ns.Marca = __ds_scope.Marca;
 

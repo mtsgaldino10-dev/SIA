@@ -12,7 +12,7 @@ design-system/
 ├── tokens/               fonts, colors, typography, spacing, base — fonte da verdade dos valores
 ├── assets/               simbolo.svg, favicon.svg, fonts/*.ttf
 ├── components/<grupo>/   X.jsx (implementação), X.d.ts (props), X.prompt.md (quando e como usar)
-├── ui_kits/              telas clicáveis: sia-web (desktop) e sia-movel (celular)
+├── ui_kits/              telas clicáveis: warefly-web (desktop) e warefly-movel (celular)
 ├── lint/                 regras de aderência usadas pelo lint do app
 └── referencia/           páginas HTML para abrir no navegador (não são componentes)
 ```
@@ -61,8 +61,8 @@ As adições pedidas no brief (breadcrumb, busca ⌘K, filtro de período e menu
 
 ## UI kits
 
-- [`ui_kits/sia-web`](ui_kits/sia-web/README.md): desktop. Painel geral, pedidos, separação e envio, guia imprimível, saldo, remessas, divergências, importação XLSX, login.
-- [`ui_kits/sia-movel`](ui_kits/sia-movel/README.md): celular. Início da base, receber remessa, confirmação.
+- [`ui_kits/warefly-web`](ui_kits/warefly-web/README.md): desktop. Painel geral, pedidos, separação e envio, guia imprimível, saldo, remessas, divergências, importação XLSX, login.
+- [`ui_kits/warefly-movel`](ui_kits/warefly-movel/README.md): celular. Início da base, receber remessa, confirmação.
 
 Correspondência com o app:
 
@@ -70,14 +70,14 @@ Correspondência com o app:
 |---|---|
 | tokens/*.css | app/src/index.css, app/index.html |
 | components/* | app/src/components/ui.tsx, Layout.tsx, Conferencia.tsx, MaterialBusca.tsx, app/src/lib/formato.ts |
-| sia-web Painel | app/src/pages/Inicio.tsx, app/src/pages/Painel.tsx |
-| sia-web Pedidos / Separação e envio | app/src/pages/pedidos/Pedidos.tsx, PedidoDetalhe.tsx |
-| sia-web Guia | app/src/pages/remessas/Guia.tsx |
-| sia-web Saldo | app/src/pages/Saldo.tsx |
-| sia-web Divergências | app/src/pages/Divergencias.tsx |
-| sia-web Importar materiais | app/src/pages/admin/ImportarMateriais.tsx |
-| sia-web Login | app/src/pages/Login.tsx |
-| sia-movel Início / Receber | app/src/pages/Inicio.tsx, app/src/pages/remessas/Receber.tsx, app/src/components/Conferencia.tsx |
+| warefly-web Painel | app/src/pages/Inicio.tsx, app/src/pages/Painel.tsx |
+| warefly-web Pedidos / Separação e envio | app/src/pages/pedidos/Pedidos.tsx, PedidoDetalhe.tsx |
+| warefly-web Guia | app/src/pages/remessas/Guia.tsx |
+| warefly-web Saldo | app/src/pages/Saldo.tsx |
+| warefly-web Divergências | app/src/pages/Divergencias.tsx |
+| warefly-web Importar materiais | app/src/pages/admin/ImportarMateriais.tsx |
+| warefly-web Login | app/src/pages/Login.tsx |
+| warefly-movel Início / Receber | app/src/pages/Inicio.tsx, app/src/pages/remessas/Receber.tsx, app/src/components/Conferencia.tsx |
 
 ## Referência visual
 
@@ -104,17 +104,17 @@ As páginas de `referencia/` abrem com duplo clique, sem servidor. Precisam de i
 | [`components/forms.card.html`](referencia/components/forms.card.html) | Botões, abas, campos, seleção, busca de material |
 | [`components/layout.card.html`](referencia/components/layout.card.html) | Menu lateral, topo de página, cartões, cabeçalho e barra do celular |
 | [`components/charts.card.html`](referencia/components/charts.card.html) | Donut e gráfico de linha |
-| [`ui_kits/sia-web.html`](referencia/ui_kits/sia-web.html) | UI kit desktop navegável |
-| [`ui_kits/sia-movel.html`](referencia/ui_kits/sia-movel.html) | UI kit celular (duas telas lado a lado) |
+| [`ui_kits/warefly-web.html`](referencia/ui_kits/warefly-web.html) | UI kit desktop navegável |
+| [`ui_kits/warefly-movel.html`](referencia/ui_kits/warefly-movel.html) | UI kit celular (duas telas lado a lado) |
 
-**De onde vêm os componentes nas páginas.** Os cartões de componentes e os UI kits usam `referencia/_ds_bundle.js`, a compilação dos `.jsx` feita pelo Claude Design (namespace `window.SIADesignSystem_ad870b`). O cabeçalho do bundle guarda o hash sha256 de cada fonte, e hoje os 36 conferem com `components/` e `ui_kits/`. Consequências:
+**De onde vêm os componentes nas páginas.** Os cartões de componentes e os UI kits usam `referencia/_ds_bundle.js`, a compilação dos `.jsx` feita pelo Claude Design (namespace `window.WareflyDesignSystem_ad870b`). O cabeçalho do bundle guarda o hash sha256 de cada fonte, e hoje os 36 conferem com `components/` e `ui_kits/`. Consequências:
 
 - Alterar um `.jsx` de `components/` **não** muda os cartões até o bundle ser gerado de novo, com um novo export do Claude Design.
 - Os UI kits também pedem os `.jsx` de `ui_kits/` ao navegador. Por duplo clique (`file://`) o navegador bloqueia esses pedidos e as telas vêm do bundle; os avisos de CORS no console são esperados. Para ver alterações feitas nos `.jsx` dos kits, sirva a pasta por HTTP:
 
   ```powershell
   python -m http.server 8000 -d design-system
-  # abra http://localhost:8000/referencia/ui_kits/sia-web.html
+  # abra http://localhost:8000/referencia/ui_kits/warefly-web.html
   ```
 
 ## Lint de aderência
@@ -141,7 +141,7 @@ O export foi feito no meio da troca de identidade. Os `.jsx`, os tokens e a maio
 
 - `.d.ts` e `.prompt.md`: Marca ("Sistema Integrado de Almoxarifado"), Simbolo ("tronco com três ramos", "cobre sobre grafite"), Botao ("primario = cobre"), Etiqueta ("Sem tom = cobre", "número grande em mono, borda esquerda colorida"), Abas ("sublinhado cobre"), Entrada ("foco cobre"), MenuLateral e BarraInferior ("grafite com borda cobre"), BuscaComando ("menu grafite").
 - `Simbolo.d.ts` não declara a prop `cor2`, que o `Simbolo.jsx` aceita. Por isso o lint avisaria se alguém usasse `cor2`.
-- Páginas `colors-derived.html` ("Borda 30%", "Borda forte 55%", "Cobre hover"), `radii-borders.html` (borda 6px da etiqueta e 4px do menu, que os componentes não usam mais), `shadow.html` ("Cartão sem sombra") e `type-labels.html` (sigla "SIA" sobre grafite).
+- Páginas `colors-derived.html` ("Borda 30%", "Borda forte 55%", "Cobre hover"), `radii-borders.html` (borda 6px da etiqueta e 4px do menu, que os componentes não usam mais) e `shadow.html` ("Cartão sem sombra").
 - Comentários de `tokens/spacing.css` ("borda direita cobre") e partes de "Visual foundations" abaixo (hover, foco e gráficos em cobre/grafite).
 - "Iconography" abaixo descreve o símbolo antigo (tronco com três ramos, quadrado grafite); os SVGs de `assets/` são a asa Warefly, e o favicon é um quadrado azul.
 - Moldura de celular do kit móvel com `#1d2127` e `#d9d4ca` fixos.

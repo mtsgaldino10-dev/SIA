@@ -1,7 +1,7 @@
-const O = window.SIADesignSystem_ad870b;
+const O = window.WareflyDesignSystem_ad870b;
 function Saldo() {
   const { PaginaTopo, Campo, Selecao, Entrada, Tabela, Qtd, Vazio } = O;
-  const D = window.SIA_DADOS;
+  const D = window.WAREFLY_DADOS;
   const [almox, setAlmox] = React.useState('211');
   const [t, setT] = React.useState('');
   const [zer, setZer] = React.useState(false);
@@ -39,7 +39,7 @@ function Remessas({ ir }) {
 
 function Divergencias() {
   const { PaginaTopo, Tabela, Doc, Botao, Cartao, Campo, Selecao, Entrada, Aviso, Qtd } = O;
-  const D = window.SIA_DADOS;
+  const D = window.WAREFLY_DADOS;
   const [lista, setLista] = React.useState(D.divergencias);
   const [aberta, setAberta] = React.useState(null);
   const [just, setJust] = React.useState('');

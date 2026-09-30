@@ -1,5 +1,5 @@
 -- =====================================================================
--- SIA · Fase 5 — Indicadores do painel da gestão
+-- Warefly · Fase 5 — Indicadores do painel da gestão
 -- =====================================================================
 begin;
 create extension if not exists pgtap with schema extensions;

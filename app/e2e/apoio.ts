@@ -4,11 +4,11 @@ import { fileURLToPath } from 'node:url'
 import * as XLSX from 'xlsx'
 
 export const USUARIOS = {
-  admin: { email: 'admin@sia.test', senha: 'Senha123!', nome: 'Ana Admin' },
-  gestao: { email: 'gestao@sia.test', senha: 'Senha123!', nome: 'Gil Gestão' },
-  carlos: { email: 'carlos@sia.test', senha: 'Senha123!', nome: 'Carlos 211' },
-  victor: { email: 'victor@sia.test', senha: 'Senha123!', nome: 'Victor' },
-  vinicius: { email: 'vinicius@sia.test', senha: 'Senha123!', nome: 'Vinícius' },
+  admin: { email: 'admin@warefly.test', senha: 'Senha123!', nome: 'Ana Admin' },
+  gestao: { email: 'gestao@warefly.test', senha: 'Senha123!', nome: 'Gil Gestão' },
+  carlos: { email: 'carlos@warefly.test', senha: 'Senha123!', nome: 'Carlos 211' },
+  victor: { email: 'victor@warefly.test', senha: 'Senha123!', nome: 'Victor' },
+  vinicius: { email: 'vinicius@warefly.test', senha: 'Senha123!', nome: 'Vinícius' },
 } as const
 
 export type Quem = keyof typeof USUARIOS

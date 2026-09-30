@@ -11,7 +11,7 @@
 
 O depósito **3256** é o almoxarifado geral e atende todos os tipos de equipe. O material de multifuncional, moto e comercial passa a ser controlado por um almoxarifado próprio, o **211**, que abastece **11 mini-almoxarifados** nas bases, divididos entre **4 supervisores**.
 
-O SAP continua sendo o sistema oficial. O SIA roda **em paralelo**, sem integração, e existe para responder uma pergunta que hoje não tem resposta confiável: *o que cada base pediu, o que foi enviado e o que realmente chegou*.
+O SAP continua sendo o sistema oficial. O Warefly roda **em paralelo**, sem integração, e existe para responder uma pergunta que hoje não tem resposta confiável: *o que cada base pediu, o que foi enviado e o que realmente chegou*.
 
 ### Estrutura inicial
 

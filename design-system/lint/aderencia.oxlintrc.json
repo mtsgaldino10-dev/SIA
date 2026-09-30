@@ -25,8 +25,8 @@
               "components/feedback/**",
               "components/forms/**",
               "components/layout/**",
-              "ui_kits/sia-movel/**",
-              "ui_kits/sia-web/**"
+              "ui_kits/warefly-movel/**",
+              "ui_kits/warefly-web/**"
             ],
             "message": "Import design-system components from 'index.js', not component internals."
           }

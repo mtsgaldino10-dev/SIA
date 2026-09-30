@@ -1,7 +1,7 @@
-const G = window.SIADesignSystem_ad870b;
+const G = window.WareflyDesignSystem_ad870b;
 function Guia({ ir }) {
   const { Marca, Botao } = G;
-  const D = window.SIA_DADOS;
+  const D = window.WAREFLY_DADOS;
   const bd = { border: '1px solid #000', padding: '6px 8px', textAlign: 'left', fontSize: '11pt' };
   const th = { ...bd, fontWeight: 600, background: '#f2f2f2' };
   return (

@@ -1,7 +1,7 @@
-const P = window.SIADesignSystem_ad870b;
+const P = window.WareflyDesignSystem_ad870b;
 function Painel({ ir }) {
   const { PaginaTopo, Etiqueta, Cartao, GraficoLinha, Donut, Tabela, ItemLista, Doc, StatusBadge, Botao } = P;
-  const D = window.SIA_DADOS;
+  const D = window.WAREFLY_DADOS;
   return (
     <>
       <PaginaTopo trilha={['Início', 'Painel geral']} titulo="Painel do 211" sub="Indicadores do período. Remessas paradas mostram a situação de agora." acoes={<Botao variante="secundario" onClick={() => ir('pedidos')}>Ver fila de pedidos</Botao>} />

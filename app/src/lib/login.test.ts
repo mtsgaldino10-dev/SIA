@@ -7,7 +7,7 @@ describe('emailDoUsuario', () => {
   })
 
   it('aceita o e-mail completo como veio', () => {
-    expect(emailDoUsuario('admin@sia.test')).toBe('admin@sia.test')
+    expect(emailDoUsuario('admin@warefly.test')).toBe('admin@warefly.test')
   })
 
   it('ignora espaços e maiúsculas', () => {

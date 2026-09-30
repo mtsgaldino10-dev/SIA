@@ -1,4 +1,4 @@
-window.SIA_DADOS = {
+window.WAREFLY_DADOS = {
   bases: [
     { id: '211', codigo: '211', nome: 'Almoxarifado regional' },
     { id: 'B03', codigo: 'B03', nome: 'Base Contagem' },

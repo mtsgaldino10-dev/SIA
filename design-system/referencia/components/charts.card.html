@@ -6,7 +6,7 @@
 <script src="../_ds_bundle.js"></script>
 <style>body{padding:20px}.g{display:flex;flex-direction:column;gap:14px}.r{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.l{font:400 .72rem var(--fonte-mono);color:var(--texto-2);width:90px;flex:none}</style></head><body><div id="root"></div>
 <script type="text/babel">
-const NS = window.SIADesignSystem_ad870b;
+const NS = window.WareflyDesignSystem_ad870b;
 
 function Demo(){ const { Donut, GraficoLinha, Sparkline, Cartao } = NS; const d=['01/09','04/09','07/09','10/09','13/09','16/09','19/09','22/09','25/09','28/09']; return <div style={{display:'grid',gridTemplateColumns:'1fr 1.3fr',gap:12}}>
 <Cartao titulo="Remessas por status" periodo="30 dias" menu><Donut tamanho={130} espessura={18} centro={48} legendaCentro="remessas" fatias={[{rotulo:'Recebida',valor:31,cor:'var(--st-ok)'},{rotulo:'Em trânsito',valor:12,cor:'var(--st-transito)'},{rotulo:'Com divergência',valor:5,cor:'var(--st-alerta)'}]}/></Cartao>

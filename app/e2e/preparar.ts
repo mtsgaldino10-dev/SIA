@@ -1,12 +1,16 @@
 import { execSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { USUARIOS } from './apoio'
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 
+// O container do banco local se chama supabase_db_<project_id do config.toml>.
+const PROJETO = /^project_id\s*=\s*"([^"]+)"/m.exec(readFileSync(path.join(RAIZ, 'supabase', 'config.toml'), 'utf8'))?.[1]
+
 function sql(comando: string) {
-  execSync('docker exec -i supabase_db_SIA psql -v ON_ERROR_STOP=1 -U postgres -q', { input: comando, stdio: ['pipe', 'inherit', 'inherit'] })
+  execSync(`docker exec -i supabase_db_${PROJETO} psql -v ON_ERROR_STOP=1 -U postgres -q`, { input: comando, stdio: ['pipe', 'inherit', 'inherit'] })
 }
 
 /** Zera o banco local e cria os usuários de teste com papéis e atribuições. */

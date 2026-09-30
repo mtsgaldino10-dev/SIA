@@ -1,4 +1,4 @@
-const S = window.SIADesignSystem_ad870b;
+const S = window.WareflyDesignSystem_ad870b;
 function Shell({ ativo, onNavegar, children }) {
   const { MenuLateral } = S;
   const grupos = [

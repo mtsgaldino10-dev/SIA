@@ -1,4 +1,4 @@
-Símbolo do SIA (tronco com três ramos); use sozinho só em favicon, ícone de app ou selo — no resto use Marca.
+Símbolo do Warefly (asa com três penas); use sozinho só em favicon, ícone de app ou selo — no resto use Marca.
 ```jsx
 <Simbolo tamanho={32} />
 ```

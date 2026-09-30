@@ -1,7 +1,7 @@
-const PD = window.SIADesignSystem_ad870b;
+const PD = window.WareflyDesignSystem_ad870b;
 function Pedidos({ ir }) {
   const { PaginaTopo, Abas, ItemLista, Doc, StatusBadge, Botao, Vazio } = PD;
-  const D = window.SIA_DADOS;
+  const D = window.WAREFLY_DADOS;
   const [aba, setAba] = React.useState('fila');
   const lista = D.pedidos.filter((p) => aba === 'fila' ? ['solicitado', 'aprovado'].includes(p.status) : aba === 'abertos' ? !['encerrado', 'cancelado'].includes(p.status) : true);
   return (
@@ -21,7 +21,7 @@ function Pedidos({ ir }) {
 
 function PedidoDetalhe({ ir }) {
   const { PaginaTopo, Doc, StatusBadge, Cartao, Dados, Tabela, Entrada, Campo, Aviso, Botao, Qtd } = PD;
-  const D = window.SIA_DADOS;
+  const D = window.WAREFLY_DADOS;
   const [qtds, setQtds] = React.useState(Object.fromEntries(D.itensPedido.map((i) => [i.codigo_sap, String(i.aprovada)])));
   const [doc, setDoc] = React.useState('');
   const [erro, setErro] = React.useState(null);

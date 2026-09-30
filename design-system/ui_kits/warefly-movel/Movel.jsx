@@ -1,4 +1,4 @@
-const M = window.SIADesignSystem_ad870b;
+const M = window.WareflyDesignSystem_ad870b;
 function InicioBase({ ir }) {
   const { PaginaTopo, Cartao, Etiqueta, ItemLista, Doc, Botao } = M;
   return (
