@@ -11,6 +11,7 @@ import {
   IcHistorico,
   IcInicio,
   IcMateriais,
+  IcMotivos,
   IcMovimentar,
   IcPainel,
   IcPedidos,
@@ -29,7 +30,7 @@ type ItemMenu = { para: string; rotulo: string; grupo: string; icone: ReactNode;
 /** Itens de navegação conforme papel e atribuições. */
 // eslint-disable-next-line react-refresh/only-export-components
 export function useMenu(): ItemMenu[] {
-  const { ehAdmin, veTudo, almoxResponsavel, almoxVisiveis, almoxGeridos } = useSessao()
+  const { ehAdmin, ehGestora, veTudo, almoxResponsavel, almoxVisiveis, almoxGeridos } = useSessao()
   const opera = almoxResponsavel.length > 0
   const operaBase = almoxResponsavel.some((a) => a.tipo === 'base')
   const operaRegional = almoxResponsavel.some((a) => a.tipo === 'regional')
@@ -47,6 +48,7 @@ export function useMenu(): ItemMenu[] {
   if (operaBase && !operaRegional) itens.push({ para: '/movimentar/saida', rotulo: 'Registrar saída', grupo: 'Operação', icone: <IcSaida /> })
   if (ve) itens.push({ para: '/historico', rotulo: 'Histórico', grupo: 'Operação', icone: <IcHistorico /> })
   if (veTudo) itens.push({ para: '/painel', rotulo: 'Painel da gestão', grupo: 'Gestão', icone: <IcPainel /> })
+  if (ehGestora || ehAdmin) itens.push({ para: '/cadastros/motivos', rotulo: 'Motivos de redução', grupo: 'Cadastros', icone: <IcMotivos /> })
   if (ehAdmin) {
     itens.push({ para: '/admin/almoxarifados', rotulo: 'Almoxarifados', grupo: 'Cadastros', icone: <IcAlmoxarifados /> })
     itens.push({ para: '/admin/usuarios', rotulo: 'Usuários e atribuições', grupo: 'Cadastros', icone: <IcUsuarios /> })

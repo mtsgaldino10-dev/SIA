@@ -141,6 +141,18 @@ export const IcSaldoInicial = () => (
   </Icone>
 )
 
+/** Motivos de redução: lista com marcadores. */
+export const IcMotivos = () => (
+  <Icone>
+    <path d="M9 6h11" />
+    <path d="M9 12h11" />
+    <path d="M9 18h11" />
+    <path d="M4 6h.01" />
+    <path d="M4 12h.01" />
+    <path d="M4 18h.01" />
+  </Icone>
+)
+
 /** Seta de abrir e fechar grupo: aponta para baixo; o CSS gira quando recolhido. */
 export const IcSeta = () => (
   <Icone>

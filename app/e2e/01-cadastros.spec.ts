@@ -113,3 +113,26 @@ test('supervisor não vê cadastros nem base de outro supervisor', async ({ page
   await expect(page.getByText('Acesso restrito ao administrador.')).toBeVisible()
   await sair(page)
 })
+
+test('gestora mantém os motivos de redução; supervisor não acessa', async ({ page }) => {
+  await entrar(page, 'carlos')
+  await page.getByRole('link', { name: 'Motivos de redução' }).click()
+  await expect(page.getByRole('heading', { name: 'Motivos de redução', level: 1 })).toBeVisible()
+  await expect(page.getByLabel(/^Nome do motivo/)).toHaveCount(4)
+  await page.getByLabel('Novo motivo').fill('Pedido em duplicidade')
+  await page.getByRole('button', { name: 'Cadastrar motivo' }).click()
+  await expect(page.getByText('Motivo "Pedido em duplicidade" cadastrado.')).toBeVisible()
+  // O checkbox reflete o banco: muda depois que a gravação volta
+  await page.getByLabel('Pedido em duplicidade ativo').click()
+  await expect(page.getByText('Motivo "Pedido em duplicidade" inativado.')).toBeVisible()
+  await expect(page.getByLabel('Pedido em duplicidade ativo')).not.toBeChecked()
+  await page.getByLabel('Novo motivo').fill('outro')
+  await page.getByRole('button', { name: 'Cadastrar motivo' }).click()
+  await expect(page.getByText('Já existe um motivo com esse nome.')).toBeVisible()
+  await sair(page)
+
+  await entrar(page, 'victor')
+  await expect(page.getByRole('link', { name: 'Motivos de redução' })).toHaveCount(0)
+  await page.goto('/cadastros/motivos')
+  await expect(page.getByText('Acesso restrito à gestão do almoxarifado e ao administrador.')).toBeVisible()
+})

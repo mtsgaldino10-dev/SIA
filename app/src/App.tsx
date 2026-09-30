@@ -17,6 +17,7 @@ import { ReceberExterno } from './pages/entradas/ReceberExterno'
 import { PedidoDetalhe } from './pages/pedidos/PedidoDetalhe'
 import { NovoPedido, Pedidos } from './pages/pedidos/Pedidos'
 import { Guia } from './pages/remessas/Guia'
+import { MotivosReducao } from './pages/cadastros/MotivosReducao'
 import { Receber } from './pages/remessas/Receber'
 import { RemessaDetalhe } from './pages/remessas/RemessaDetalhe'
 import { Remessas } from './pages/remessas/Remessas'
@@ -90,6 +91,7 @@ export default function App() {
               <Route path="painel" element={<Painel />} />
               <Route path="entradas" element={<Entradas />} />
               <Route path="entradas/receber" element={<ReceberExterno />} />
+              <Route path="cadastros/motivos" element={<MotivosReducao />} />
               <Route path="admin/almoxarifados" element={<SoAdmin><AdminAlmoxarifados /></SoAdmin>} />
               <Route path="admin/usuarios" element={<SoAdmin><AdminUsuarios /></SoAdmin>} />
               <Route path="admin/materiais" element={<SoAdmin><AdminMateriais /></SoAdmin>} />
