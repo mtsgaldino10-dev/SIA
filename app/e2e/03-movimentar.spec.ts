@@ -40,12 +40,26 @@ test('supervisor cadastra as equipes das próprias bases', async ({ page }) => {
   await expect(page.getByText('Equipe "Equipe 7" cadastrada em Itabirinha.')).toBeVisible()
 })
 
-test('saída da base: bloqueia acima do saldo e exige justificativa de perda', async ({ page }) => {
+test('saída da base: exige equipe e quem retirou, bloqueia acima do saldo e exige justificativa de perda', async ({ page }) => {
   await entrar(page, 'victor')
   await page.getByRole('link', { name: 'Movimentar', exact: true }).click()
   await page.getByRole('link', { name: /Registrar saída/ }).last().click()
   await page.getByLabel('Almoxarifado').selectOption({ label: 'MNT · Mantena' })
   await adicionarItem(page, '900001', '100')
+  await page.getByRole('button', { name: 'Registrar saída' }).click()
+  await expect(page.getByText('Informe a equipe que retirou o material.')).toBeVisible()
+
+  // Trocar de base limpa a equipe escolhida
+  await page.getByLabel('Equipe').selectOption({ label: 'Equipe 12' })
+  await page.getByLabel('Almoxarifado').selectOption({ label: 'ITB · Itabirinha' })
+  await expect(page.getByLabel('Equipe')).toHaveValue('')
+  await page.getByLabel('Almoxarifado').selectOption({ label: 'MNT · Mantena' })
+  await expect(page.getByLabel('Equipe')).toHaveValue('')
+
+  await page.getByLabel('Equipe').selectOption({ label: 'Equipe 12' })
+  await page.getByRole('button', { name: 'Registrar saída' }).click()
+  await expect(page.getByText('Informe o nome de quem retirou o material.')).toBeVisible()
+  await page.getByLabel('Quem retirou').fill('João Silva')
   await page.getByRole('button', { name: 'Registrar saída' }).click()
   await expect(page.getByText(/Saldo insuficiente em Mantena.*Faça um ajuste de inventário/)).toBeVisible()
 
@@ -55,7 +69,7 @@ test('saída da base: bloqueia acima do saldo e exige justificativa de perda', a
   await expect(page.getByText('Informe a justificativa da perda.')).toBeVisible()
 
   await page.getByLabel('Motivo').selectOption('aplicacao')
-  await page.getByLabel('Observação').fill('Equipe 12, NS 4455')
+  await page.getByLabel('Observação').fill('NS 4455')
   await page.getByRole('button', { name: 'Registrar saída' }).click()
   await expect(page.getByText(/SAI-\d{6} registrada/)).toBeVisible()
   await expect(await saldo(page, 'MNT · Mantena', '900001')).toContainText('20')
@@ -138,7 +152,7 @@ test('ajuste de inventário: só a gestão ajusta, mostra a diferença e exige j
   await expect(page.getByRole('heading', { name: 'Histórico', level: 1 })).toBeVisible()
   await page.getByLabel('Almoxarifado').selectOption({ label: 'MNT · Mantena' })
   await expect(page.getByRole('row', { name: /Ajuste de inventário.*900001.*−1/ })).toBeVisible()
-  await expect(page.getByRole('row', { name: /Saída.*900001.*−4/ })).toBeVisible()
+  await expect(page.getByRole('row', { name: /Saída.*900001.*−4.*Equipe 12 · João Silva/ })).toBeVisible()
 })
 
 test('resposta perdida na rede: tentar de novo não duplica a saída', async ({ page }) => {
@@ -146,6 +160,8 @@ test('resposta perdida na rede: tentar de novo não duplica a saída', async ({ 
   await page.goto('/movimentar/saida')
   await page.getByLabel('Almoxarifado').selectOption({ label: 'MNT · Mantena' })
   await adicionarItem(page, '900003', '1')
+  await page.getByLabel('Equipe').selectOption({ label: 'Equipe 15' })
+  await page.getByLabel('Quem retirou').fill('Maria')
   // A primeira chamada chega ao banco, mas a resposta não volta ao navegador
   let perdida = false
   await page.route('**/rest/v1/rpc/rpc_registrar_saida', async (route) => {

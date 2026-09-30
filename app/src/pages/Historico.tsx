@@ -12,7 +12,7 @@ type LinhaDocumento = {
   saida_id: string | null
   ajuste_id: string | null
   remessas: { numero: number } | null
-  saidas: { numero: number } | null
+  saidas: { numero: number; retirado_por_nome?: string | null; equipes?: { nome: string } | null } | null
   ajustes: { numero: number } | null
 }
 
@@ -38,7 +38,7 @@ export function Historico() {
         supabase
           .from('movimentacoes')
           .select(
-            'id, quantidade, tipo, data_ocorrencia, criado_em, criado_por, remessa_id, saida_id, ajuste_id, tratamento_id, materiais(codigo_sap, descricao, unidade), remessas(numero), saidas(numero), ajustes(numero), divergencia_tratamentos(remessa_itens(remessa_id, remessas(numero)))',
+            'id, quantidade, tipo, data_ocorrencia, criado_em, criado_por, remessa_id, saida_id, ajuste_id, tratamento_id, materiais(codigo_sap, descricao, unidade), remessas(numero), saidas(numero, retirado_por_nome, equipes(nome)), ajustes(numero), divergencia_tratamentos(remessa_itens(remessa_id, remessas(numero)))',
           )
           .eq('almox_id', almoxId)
           .order('id', { ascending: false })
@@ -89,7 +89,7 @@ export function Historico() {
                 const doc = m.remessa_id ? (
                   <Link to={`/remessas/${m.remessa_id}`}>{formatarDoc('REM', m.remessas?.numero ?? 0)}</Link>
                 ) : m.saida_id ? (
-                  formatarDoc('SAI', m.saidas?.numero ?? 0)
+                  [formatarDoc('SAI', m.saidas?.numero ?? 0), m.saidas?.equipes?.nome, m.saidas?.retirado_por_nome].filter(Boolean).join(' · ')
                 ) : m.ajuste_id ? (
                   formatarDoc('AJU', m.ajustes?.numero ?? 0)
                 ) : trat ? (

@@ -19,10 +19,18 @@ export default async function preparar() {
   const status = JSON.parse(execSync('supabase status -o json', { cwd: RAIZ, stdio: ['ignore', 'pipe', 'ignore'] }).toString())
   const chave = status.SERVICE_ROLE_KEY as string
 
-  // O reset reinicia os serviços; espera o Auth voltar
-  for (let i = 0; i < 30; i++) {
-    const r = await fetch('http://127.0.0.1:54321/auth/v1/health', { headers: { apikey: chave } }).catch(() => null)
-    if (r?.ok) break
+  // O reset reinicia auth, storage e realtime, que podem voltar com os IPs
+  // trocados entre si. O Kong guarda os endereços antigos e responde 502
+  // (foto do recebimento falha com "invalid response from upstream").
+  // Reiniciar o Kong faz ele achar os serviços de novo; depois espera os três.
+  execSync(`docker restart supabase_kong_${PROJETO}`, { stdio: 'ignore' })
+  const rotas = ['/auth/v1/health', '/storage/v1/bucket', '/realtime/v1/api/ping']
+  const cabecalhos = { apikey: chave, Authorization: `Bearer ${chave}` }
+  for (let i = 0; i < 60; i++) {
+    const respostas = await Promise.all(
+      rotas.map((rota) => fetch(`http://127.0.0.1:54321${rota}`, { headers: cabecalhos }).catch(() => null)),
+    )
+    if (respostas.every((r) => r?.ok)) break
     await new Promise((ok) => setTimeout(ok, 1000))
   }
 

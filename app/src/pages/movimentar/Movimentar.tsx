@@ -8,7 +8,9 @@ import { Aviso, Campo, PaginaTopo, Vazio } from '../../components/ui'
 import { saldosDe } from '../../lib/compartilhado'
 import { mensagemErro } from '../../lib/erros'
 import { formatarDoc, formatarQtd, formatarSinal, hojeISO, lerNumero, qtdValida, rotuloStatus } from '../../lib/formato'
+import { validarQuemRetirou } from '../../lib/saida'
 import { supabase, type Almox, type Enum } from '../../lib/supabase'
+import { listaOuErro, useConsulta } from '../../lib/useConsulta'
 import { SeletorAlmox } from '../Saldo'
 
 function useSaldos(almoxId: string, versao = 0) {
@@ -27,6 +29,22 @@ function useSaldos(almoxId: string, versao = 0) {
     }
   }, [almoxId, versao])
   return saldos
+}
+
+/** Equipes ativas que podem retirar num almoxarifado: as da base, ou as das bases de um regional. */
+function useEquipes(local: Almox | undefined, almoxarifados: Almox[]) {
+  const ids = !local
+    ? []
+    : local.tipo === 'base'
+      ? [local.id]
+      : almoxarifados.filter((a) => a.pai_id === local.id).map((a) => a.id)
+  return useConsulta(
+    () =>
+      ids.length
+        ? listaOuErro(supabase.from('equipes').select('id, nome, almox_id').eq('ativa', true).in('almox_id', ids).order('nome'))
+        : Promise.resolve([]),
+    [ids.join()],
+  )
 }
 
 export function Movimentar() {
@@ -63,11 +81,16 @@ export function Movimentar() {
 
 // ---------------------------------------------------------------------------
 export function Saida() {
-  const { almoxResponsavel } = useSessao()
+  const { almoxResponsavel, almoxarifados, almox } = useSessao()
   const { material, aceitaFracao } = useCatalogo()
   const [almoxId, setAlmoxId] = useState(almoxResponsavel.find((a) => a.tipo === 'base')?.id ?? almoxResponsavel[0]?.id ?? '')
   const [versao, setVersao] = useState(0)
   const saldos = useSaldos(almoxId, versao)
+  const atual = almox(almoxId)
+  const equipes = useEquipes(atual, almoxarifados)
+  // Trocar de almoxarifado limpa a equipe (ver o SeletorAlmox abaixo)
+  const [equipeId, setEquipeId] = useState('')
+  const [retiradoPor, setRetiradoPor] = useState('')
   const [linhas, setLinhas] = useState<LinhaQtd[]>([])
   const [motivo, setMotivo] = useState<Enum<'motivo_saida'>>('aplicacao')
   const [data, setData] = useState(hojeISO())
@@ -78,6 +101,8 @@ export function Saida() {
   const [ocupado, setOcupado] = useState(false)
   // Id gerado aqui: repetir o envio após uma resposta perdida não duplica a saída
   const [idRegistro, setIdRegistro] = useState(() => crypto.randomUUID())
+  const ehBase = atual?.tipo === 'base'
+  const exigeQuem = ehBase && motivo === 'aplicacao'
 
   if (!almoxResponsavel.length) return <Vazio>Você não é responsável por nenhum almoxarifado.</Vazio>
 
@@ -87,6 +112,8 @@ export function Saida() {
     const e = validarLinhas(linhas, aceitaFracao, (id) => material(id)?.codigo_sap ?? '')
     if (e) return setErro(e)
     if (motivo !== 'aplicacao' && !justificativa.trim()) return setErro(`Informe a justificativa da ${rotuloStatus(motivo).toLowerCase()}.`)
+    const quem = validarQuemRetirou({ ehBase, motivo, equipeId, retiradoPor })
+    if (quem) return setErro(quem)
     setOcupado(true)
     const { data: id, error } = await supabase.rpc('rpc_registrar_saida', {
       p_almox_id: almoxId,
@@ -96,6 +123,8 @@ export function Saida() {
       p_justificativa: justificativa || undefined,
       p_observacao: observacao || undefined,
       p_id: idRegistro,
+      p_equipe_id: equipeId || undefined,
+      p_retirado_por_nome: retiradoPor.trim() || undefined,
     })
     setOcupado(false)
     if (error) return setErro(mensagemErro(error))
@@ -105,6 +134,7 @@ export function Saida() {
     setLinhas([])
     setJustificativa('')
     setObservacao('')
+    setRetiradoPor('')
     setVersao(versao + 1)
   }
 
@@ -117,7 +147,14 @@ export function Saida() {
       />
       <div className="cartao pilha">
         <div className="grade-2">
-          <SeletorAlmox valor={almoxId} onChange={setAlmoxId} opcoes={almoxResponsavel} />
+          <SeletorAlmox
+            valor={almoxId}
+            onChange={(id) => {
+              setAlmoxId(id)
+              setEquipeId('')
+            }}
+            opcoes={almoxResponsavel}
+          />
           <Campo rotulo="Motivo">
             <select value={motivo} onChange={(e) => setMotivo(e.target.value as Enum<'motivo_saida'>)}>
               <option value="aplicacao">Aplicação em serviço</option>
@@ -131,10 +168,29 @@ export function Saida() {
           <Campo rotulo="Justificativa" ajuda={motivo === 'aplicacao' ? 'Opcional na aplicação.' : 'Obrigatória para perda e avaria.'}>
             <input value={justificativa} onChange={(e) => setJustificativa(e.target.value)} />
           </Campo>
-          <Campo rotulo="Observação" ajuda="Livre: equipe, nota de serviço…" style={{ gridColumn: '1 / -1' }}>
+          <Campo rotulo="Equipe" ajuda={exigeQuem ? 'Obrigatória na aplicação em serviço.' : 'Opcional.'}>
+            <select value={equipeId} onChange={(e) => setEquipeId(e.target.value)}>
+              <option value="">{exigeQuem ? 'Escolha a equipe' : 'Nenhuma'}</option>
+              {(equipes.dados ?? []).map((q) => (
+                <option key={q.id} value={q.id}>
+                  {ehBase ? q.nome : `${q.nome} · ${almox(q.almox_id)?.codigo ?? ''}`}
+                </option>
+              ))}
+            </select>
+          </Campo>
+          <Campo rotulo="Quem retirou" ajuda={exigeQuem ? 'Nome de quem pegou o material. Obrigatório na aplicação em serviço.' : 'Opcional.'}>
+            <input value={retiradoPor} onChange={(e) => setRetiradoPor(e.target.value)} />
+          </Campo>
+          <Campo rotulo="Observação" ajuda="Livre: nota de serviço…" style={{ gridColumn: '1 / -1' }}>
             <input value={observacao} onChange={(e) => setObservacao(e.target.value)} />
           </Campo>
         </div>
+        {ehBase && equipes.dados && equipes.dados.length === 0 && (
+          <Aviso tipo="atencao">
+            Nenhuma equipe ativa em {atual?.nome}. <Link to={`/cadastros/equipes?base=${almoxId}`}>Cadastre as equipes</Link> antes de
+            registrar aplicação em serviço.
+          </Aviso>
+        )}
       </div>
       <div className="cartao pilha">
         <h2>Itens</h2>
