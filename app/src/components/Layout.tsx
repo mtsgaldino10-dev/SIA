@@ -2,7 +2,6 @@ import { useEffect, useId, useState, type ReactNode } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useCatalogo } from '../auth/CatalogoContext'
 import { useSessao } from '../auth/SessaoContext'
-import { rotuloStatus } from '../lib/formato'
 import { supabase } from '../lib/supabase'
 import { BuscaComando, DialogoBusca } from './BuscaGlobal'
 import {
@@ -111,7 +110,7 @@ function ItemDoMenu({ item, contagem }: { item: ItemMenu; contagem: number | nul
 }
 
 export function Layout() {
-  const { perfil, sair, almoxResponsavel } = useSessao()
+  const { perfil, sair, almoxResponsavel, rotuloPerfil } = useSessao()
   const catalogo = useCatalogo()
   const itens = useMenu()
   const [maisAberto, setMaisAberto] = useState(false)
@@ -158,7 +157,7 @@ export function Layout() {
         </nav>
         <div className="menu-rodape">
           <div className="nome">{perfil?.nome}</div>
-          <div>{rotuloStatus(perfil?.papel)}</div>
+          <div>{rotuloPerfil}</div>
           <button type="button" onClick={() => void sair()}>
             Sair
           </button>

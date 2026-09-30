@@ -1,6 +1,7 @@
 import type { Session } from '@supabase/supabase-js'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { mensagemErro } from '../lib/erros'
+import { basesComEquipes, locaisGeridos, regionaisGeridos, rotuloDoPerfil } from '../lib/perfis'
 import { comRetentativa } from '../lib/retentativa'
 import { supabase, type Almox, type Atribuicao, type Perfil } from '../lib/supabase'
 
@@ -20,7 +21,15 @@ type Sessao = {
   almoxResponsavel: Almox[]
   /** almoxarifados cujo saldo o usuário pode consultar */
   almoxVisiveis: Almox[]
-  almox: (id: string | null | undefined) => Almox | undefined
+  /** responsável de um almoxarifado regional: aprova, entrega, ajusta e inventaria */
+  ehGestora: boolean
+  /** locais cujo estoque o usuário ajusta: admin, todos; gestora, o regional e as bases dele */
+  almoxGeridos: Almox[]
+  /** bases cujas equipes o usuário mantém */
+  basesEquipes: Almox[]
+  /** rótulo do perfil no rodapé do menu */
+  rotuloPerfil: string
+  almox:(id: string | null | undefined) => Almox | undefined
   recarregarPerfil: () => Promise<void>
   sair: () => Promise<void>
 }
@@ -85,8 +94,10 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
     const ehGestao = !!perfil?.ativo && perfil.papel === 'gestao'
     const veTudo = ehAdmin || ehGestao
     const ativo = !!perfil?.ativo
-    const idsResp = new Set(ativo ? atribuicoes.filter((a) => a.funcao === 'responsavel').map((a) => a.almox_id) : [])
-    const idsAtrib = new Set(ativo ? atribuicoes.map((a) => a.almox_id) : [])
+    const minhas = ativo ? atribuicoes : []
+    const idsResp = new Set(minhas.filter((a) => a.funcao === 'responsavel').map((a) => a.almox_id))
+    const idsAtrib = new Set(minhas.map((a) => a.almox_id))
+    const ehGestora = regionaisGeridos(almoxarifados, minhas).size > 0
     const porId = new Map(almoxarifados.map((a) => [a.id, a]))
     const operaveis = almoxarifados.filter((a) => a.tipo !== 'externo')
 
@@ -105,6 +116,10 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
       almoxVisiveis: veTudo
         ? operaveis
         : operaveis.filter((a) => idsAtrib.has(a.id) || (a.pai_id !== null && idsResp.has(a.pai_id))),
+      ehGestora,
+      almoxGeridos: locaisGeridos(almoxarifados, minhas, ehAdmin),
+      basesEquipes: basesComEquipes(almoxarifados, minhas, ehAdmin),
+      rotuloPerfil: rotuloDoPerfil({ papel: perfil?.papel, ehGestora, ehSupervisor: minhas.some((a) => a.funcao === 'supervisor') }),
       almox: (id) => (id ? porId.get(id) : undefined),
       recarregarPerfil,
       sair: async () => {

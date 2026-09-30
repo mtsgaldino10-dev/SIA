@@ -42,7 +42,7 @@ const ROTULOS: Record<string, string> = {
   ajuste_divergencia: 'Ajuste de divergência',
   // papéis
   admin: 'Administrador',
-  gestao: 'Gestão',
+  gestao: 'Gerência',
   operador: 'Operador',
   responsavel: 'Responsável',
   supervisor: 'Supervisor',

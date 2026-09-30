@@ -93,7 +93,7 @@ export function AdminUsuarios() {
             <div className="cartao pilha">
               <h2>Atribuições</h2>
               <p className="sec peq">
-                Responsável opera o almoxarifado. Supervisor acompanha. Hoje cada supervisor recebe as duas funções nas suas bases.
+                Responsável opera o almoxarifado. Supervisor acompanha. Nas bases, cada supervisor recebe as duas funções. Responsável no 211 é a gestão do almoxarifado: aprova, entrega, ajusta o estoque e inventaria.
               </p>
               {minhas.length === 0 ? (
                 <Vazio>Sem atribuições.</Vazio>
@@ -194,7 +194,7 @@ function PerfilForm({
         <Campo rotulo="Papel" ajuda="Gestão e admin veem tudo. Operador vê só onde tem atribuição.">
           <select value={papel} onChange={(e) => setPapel(e.target.value as Enum<'papel_usuario'>)}>
             <option value="operador">Operador</option>
-            <option value="gestao">Gestão</option>
+            <option value="gestao">Gerência (só consulta)</option>
             <option value="admin">Administrador</option>
           </select>
         </Campo>
